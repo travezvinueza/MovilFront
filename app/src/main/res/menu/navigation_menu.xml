@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <group
+        android:id="@+id/group1"
+        android:checkableBehavior="single">
+        <item android:title="Task">
+            <menu>
+
+                <item
+                    android:id="@+id/mUser"
+                    android:icon="@drawable/ic_person_24"
+                    android:title="Crear Usuario" />
+
+                <item
+                    android:id="@+id/mRoles"
+                    android:icon="@drawable/ic_menu"
+                    android:title="Lista Roles" />
+
+            </menu>
+
+        </item>
+
+    </group>
+
+    <group
+        android:id="@+id/group2"
+        android:checkableBehavior="single">
+        <item android:title="Otros">
+
+            <menu>
+                <item
+                    android:id="@+id/mSalir"
+                    android:icon="@drawable/ic_exit_24"
+                    android:title="Cerrar Sesion" />
+
+            </menu>
+        </item>
+
+    </group>
+
+
+</menu>
