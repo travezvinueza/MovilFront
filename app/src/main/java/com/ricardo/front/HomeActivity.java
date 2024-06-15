@@ -15,6 +15,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -36,6 +37,7 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
     private UsuarioViewModel usuarioViewModel;
+    private Toolbar toolbar;
 
     DrawerLayout drawerLayout;
     NavigationView navigationView;
@@ -71,7 +73,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        // Llamar al método para obtener la lista de usuarios
         usuarioViewModel.getUsuariosLista();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -90,6 +91,8 @@ public class HomeActivity extends AppCompatActivity {
         // Navagation Drawar------------------------------
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_View);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         toggle = new ActionBarDrawerToggle(HomeActivity.this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
@@ -140,8 +143,8 @@ public class HomeActivity extends AppCompatActivity {
                         break;
 
                     case R.id.mSalir:
-//                        editor.putString("isLoggedIn", "false");
-//                        editor.commit();
+                        editor.putString("isLoggedIn", "false");
+                        editor.commit();
                         Toast.makeText(HomeActivity.this, "Cerrando la aplicación", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(HomeActivity.this , MainActivity.class));
                         finishAffinity();

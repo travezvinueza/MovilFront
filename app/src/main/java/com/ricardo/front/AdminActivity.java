@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -28,12 +29,14 @@ import com.ricardo.front.viewmodel.UsuarioViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class AdminActivity extends AppCompatActivity {
     private ActivityAdminBinding binding;
     private UsuarioViewModel usuarioViewModel;
-    List<Usuario> usuariosList;
-    RecyclerView rvLista;
-    AdaptadorUsuarios adaptador;
+    private List<Usuario> usuariosList;
+    private RecyclerView rvLista;
+    private AdaptadorUsuarios adaptador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +45,15 @@ public class AdminActivity extends AppCompatActivity {
         binding = ActivityAdminBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Configurar el Toolbar
+        setSupportActionBar(binding.toolbar);
+
         rvLista = findViewById(R.id.rvLista2);
         rvLista.setLayoutManager(new LinearLayoutManager(this));
 
         usuariosList = new ArrayList<>();
 
-        adaptador = new AdaptadorUsuarios(AdminActivity.this, usuariosList);
+        adaptador = new AdaptadorUsuarios(this, usuariosList);
         rvLista.setAdapter(adaptador);
 
         // Inicializar ViewModel
@@ -71,16 +77,77 @@ public class AdminActivity extends AppCompatActivity {
         // Llamar al método para obtener la lista de usuarios
         usuarioViewModel.getUsuariosLista();
 
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-
-
     }
+
+    // Método para eliminar un usuario por su ID
+    public void eliminarUsuario(long idUsuario) {
+        new SweetAlertDialog(AdminActivity.this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("¿Estás seguro?")
+                .setContentText("Esta acción no se puede deshacer")
+                .setConfirmText("Sí")
+                .setConfirmClickListener(sDialog -> {
+                    // Proceder con la eliminación
+                    usuarioViewModel.eliminarUsuario(idUsuario).observe(AdminActivity.this, response -> {
+                        if (response != null && response.getRpta() == 1) {
+                            Toast.makeText(AdminActivity.this, (response.getMessage()), Toast.LENGTH_SHORT).show();
+//                            new SweetAlertDialog(AdminActivity.this, SweetAlertDialog.SUCCESS_TYPE)
+//                                    .setTitleText(response.getMessage())
+//                                    .setConfirmClickListener(SweetAlertDialog::dismissWithAnimation)
+//                                    .show();
+
+                            // Actualizar la lista de usuarios y notificar al adaptador
+                            usuarioViewModel.getUsuariosLista().observe(AdminActivity.this, listaResponse -> {
+                                if (listaResponse != null && listaResponse.getBody() != null) {
+                                    usuariosList.clear();
+                                    usuariosList.addAll(listaResponse.getBody());
+                                    adaptador.notifyDataSetChanged();
+                                }
+                            });
+                        } else {
+                            new SweetAlertDialog(AdminActivity.this, SweetAlertDialog.ERROR_TYPE)
+                                    .setTitleText("Error")
+                                    .setContentText(response != null ? response.getMessage() : "Error al eliminar usuario")
+                                    .show();
+                        }
+                    });
+                    sDialog.dismissWithAnimation();
+                })
+                .setCancelText("No")
+                .setCancelClickListener(SweetAlertDialog::dismissWithAnimation)
+                .show();
+    }
+
+
+    // Método para cambiar la vigencia de un usuario por su ID
+    public void toggleUsuarioVigencia(long idUsuario, boolean nuevaVigencia) {
+        usuarioViewModel.toggleVigencia(idUsuario, nuevaVigencia).observe(this, new Observer<GenericResponse<Usuario>>() {
+            @Override
+            public void onChanged(GenericResponse<Usuario> response) {
+                if (response != null && response.getBody() != null) {
+                    // Actualizar la lista de usuarios en adaptador
+                    for (Usuario usuario : usuariosList) {
+                        if (usuario.getId() == idUsuario) {
+                            usuario.setVigencia(nuevaVigencia);
+                            adaptador.notifyDataSetChanged();
+                            break;
+                        }
+                    }
+//                    usuarioViewModel.getUsuariosLista();
+                    new SweetAlertDialog(AdminActivity.this, SweetAlertDialog.SUCCESS_TYPE).setTitleText(response.getMessage()).show();
+                } else {
+                    // Mostrar mensaje de error si falla el cambio de vigencia
+                    Toast.makeText(AdminActivity.this, "Error al cambiar vigencia del usuario", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 
     @Override
     protected void onStart() {

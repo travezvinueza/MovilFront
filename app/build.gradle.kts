@@ -37,7 +37,8 @@ android {
     packagingOptions {
         resources.excludes.add("META-INF/*")
     }
-    
+    buildToolsVersion = "27.0.3"
+
 }
 
 dependencies {

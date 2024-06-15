@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group>
+
         <item
             android:id="@+id/mPerfil"
             android:icon="@drawable/ic_person_24"
@@ -11,7 +11,5 @@
             android:id="@+id/mCerrar"
             android:icon="@drawable/ic_exit_24"
             android:title="Cerrar Sesión" />
-
-    </group>
 
 </menu>

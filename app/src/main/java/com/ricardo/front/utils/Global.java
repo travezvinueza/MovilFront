@@ -1,10 +1,6 @@
 package com.ricardo.front.utils;
 
 public class Global {
-    public enum Estado {
-        A,
-        I
-    }
 
     public static final String TIPO_RESULT = "result";
     public static final String TIPO_DATA = "data";

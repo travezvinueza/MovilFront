@@ -23,9 +23,15 @@ public class UsuarioViewModel extends AndroidViewModel {
     public LiveData<GenericResponse<Usuario>> login(String email, String password){
         return this.repository.login(email, password);
     }
+    public LiveData<GenericResponse<Usuario>> toggleVigencia(long id, boolean vigencia) {
+        return repository.toggleVigencia(id, vigencia);
+    }
 
     public LiveData<GenericResponse<List<Usuario>>> getUsuariosLista() {
         return repository.getUsuariosLista();
+    }
+    public LiveData<GenericResponse<Usuario>> eliminarUsuario(long idUsuario) {
+        return repository.eliminarUsuario(idUsuario);
     }
 
 

@@ -1,5 +1,9 @@
 package com.ricardo.front;
 
+import static com.ricardo.front.utils.Global.RPTA_ERROR;
+import static com.ricardo.front.utils.Global.RPTA_OK;
+import static com.ricardo.front.utils.Global.RPTA_WARNING;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,36 +77,62 @@ public class MainActivity extends AppCompatActivity {
             try {
                 if (validar()) {
                     viewModel.login(editEmail.getText().toString(), editPassword.getText().toString()).observe(this, response -> {
-                        if (response.getRpta() == 1) {
-                            new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE).setTitleText(response.getMessage()).show();
-                            Usuario u = response.getBody();
-                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                            SharedPreferences.Editor editor = preferences.edit();
-                            final Gson g = new GsonBuilder()
-                                    .registerTypeAdapter(Date.class, new DateSerializer())
-                                    .registerTypeAdapter(Time.class, new TimeSerializer())
-                                    .create();
-                            editor.putString("UsuarioJson", g.toJson(u, new TypeToken<Usuario>() {}.getType()));
-                            editor.apply();
-                            editEmail.setText("");
-                            editPassword.setText("");
+                        if (response != null) {
+                            switch (response.getRpta()) {
+                                case RPTA_OK:
+                                    Toast.makeText(MainActivity.this, (response.getMessage()), Toast.LENGTH_SHORT).show();
+//                                    new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+//                                            .setTitleText(response.getMessage())
+//                                            .show();
+                                    Usuario u = response.getBody();
+                                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                                    SharedPreferences.Editor editor = preferences.edit();
+                                    Gson g = new GsonBuilder()
+                                            .registerTypeAdapter(Date.class, new DateSerializer())
+                                            .registerTypeAdapter(Time.class, new TimeSerializer())
+                                            .create();
+                                    editor.putString("UsuarioJson", g.toJson(u, new TypeToken<Usuario>() {}.getType()));
+                                    editor.apply();
+                                    editEmail.setText("");
+                                    editPassword.setText("");
 
-                            if (u.getRole().equals("ADMIN")) {
-                                startActivity(new Intent(this, AdminActivity.class));
-                            } else if (u.getRole().equals("USER")) {
-                                startActivity(new Intent(this, HomeActivity.class));
+                                    if ("ADMIN".equals(u.getRole())) {
+                                        startActivity(new Intent(this, AdminActivity.class));
+                                    } else if ("USER".equals(u.getRole())) {
+                                        startActivity(new Intent(this, HomeActivity.class));
+                                    }
+                                    break;
+                                case RPTA_WARNING:
+//                                    Toast.makeText(MainActivity.this, (response.getMessage()), Toast.LENGTH_SHORT).show();
+                                    new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                                            .setTitleText(response.getMessage())
+                                            .show();
+                                    break;
+                                case RPTA_ERROR:
+                                default:
+                                    new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+                                            .setTitleText("Credenciales inválidas")
+                                            .show();
+                                    break;
                             }
                         } else {
-                            new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE).setTitleText("Credenciales inválidas").show();
+                            new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+                                    .setTitleText("Error en la respuesta del servidor")
+                                    .show();
                         }
                     });
                 } else {
-                    new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Complete todos los campos").show();
+                    new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                            .setTitleText("Complete todos los campos")
+                            .show();
                 }
             } catch (Exception e) {
-                new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE).setTitleText("Se ha producido un error al intentar loguearte: " + e.getMessage()).show();
+                new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+                        .setTitleText("Se ha producido un error al intentar loguearte: " + e.getMessage())
+                        .show();
             }
         });
+
 
 
         editEmail.addTextChangedListener(new TextWatcher() {
