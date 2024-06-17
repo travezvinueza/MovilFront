@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -33,6 +34,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         this.init();
         this.initViewModel();
+        Retroceder();
 
         btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,12 +84,15 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(ForgotPasswordActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-        super.onBackPressed();
+    public void Retroceder() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent i = new Intent(ForgotPasswordActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
     }
 
 }

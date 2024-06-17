@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -49,6 +50,7 @@ public class RegistrarUsuarioActivity extends AppCompatActivity {
 
         this.init();
         this.initViewModel();
+        this.Retroceder();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -315,12 +317,15 @@ public class RegistrarUsuarioActivity extends AppCompatActivity {
                 .setContentText(message).setConfirmText("Ok").show();
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(RegistrarUsuarioActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-        super.onBackPressed();
+    public void Retroceder() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(RegistrarUsuarioActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
 }

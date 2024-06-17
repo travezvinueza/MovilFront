@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,8 @@ import com.ricardo.front.utils.TimeSerializer;
 import java.sql.Date;
 import java.sql.Time;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class HomeActivity extends AppCompatActivity {
     private Toolbar toolbar;
     DrawerLayout drawerLayout;
@@ -49,6 +52,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         this.init();
+        this.Quieto();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -170,5 +174,29 @@ public class HomeActivity extends AppCompatActivity {
             tvRole.setText(usuario.getRole());
         }
     }
+
+
+    public void Quieto() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                new SweetAlertDialog(HomeActivity.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Cerrar Sesión")
+                        .setContentText("¿Estás seguro de que quieres cerrar sesión?")
+                        .setCancelText("No")
+                        .setConfirmText("Sí")
+                        .showCancelButton(true)
+                        .setCancelClickListener(sDialog -> {
+                            sDialog.dismissWithAnimation();
+                        })
+                        .setConfirmClickListener(sweetAlertDialog -> {
+                            sweetAlertDialog.dismissWithAnimation();
+                            logout();
+                        })
+                        .show();
+            }
+        });
+    }
+
 
 }

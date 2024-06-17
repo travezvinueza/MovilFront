@@ -20,7 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Front"
-        android:usesCleartextTraffic="true"   //cambiar a false si es necesario
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".EditUserActivity"

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.init();
         this.initViewModel();
+        this.Salir();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -242,26 +244,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                .setTitleText("Salir de la Aplicación")
-                .setContentText("¿Realmente quieres cerrar la aplicación?")
-                .setCancelText("No")
-                .setConfirmText("Sí")
-                .showCancelButton(true)
-                .setCancelClickListener(sDialog -> {
-                    sDialog.dismissWithAnimation();
-                    new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
-                            .setTitleText("Operación cancelada")
-                            .setContentText("No saliste de la app")
-                            .show();
-                })
-                .setConfirmClickListener(sweetAlertDialog -> {
-                    sweetAlertDialog.dismissWithAnimation();
-                    super.onBackPressed();
-                })
-                .show();
+    public void Salir() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                new SweetAlertDialog(MainActivity.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Salir de la Aplicación")
+                        .setContentText("¿Realmente quieres cerrar la aplicación?")
+                        .setCancelText("No")
+                        .setConfirmText("Sí")
+                        .showCancelButton(true)
+                        .setCancelClickListener(sDialog -> {
+                            sDialog.dismissWithAnimation();
+                            new SweetAlertDialog(MainActivity.this, SweetAlertDialog.ERROR_TYPE)
+                                    .setTitleText("Operación cancelada")
+                                    .setContentText("No saliste de la app")
+                                    .show();
+                        })
+                        .setConfirmClickListener(sweetAlertDialog -> {
+                            sweetAlertDialog.dismissWithAnimation();
+                            finishAffinity();
+                        })
+                        .show();
+            }
+        });
     }
 
     public void activityRegistrase(View view) {

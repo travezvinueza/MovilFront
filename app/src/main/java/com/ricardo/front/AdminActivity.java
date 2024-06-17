@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -67,6 +68,7 @@ public class AdminActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         this.init();
+        this.Quieto();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -307,5 +309,28 @@ public class AdminActivity extends AppCompatActivity {
         this.finish();
         this.overridePendingTransition(R.anim.left_in, R.anim.left_out);
     }
+
+    public void Quieto() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                new SweetAlertDialog(AdminActivity.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Cerrar Sesión")
+                        .setContentText("¿Estás seguro de que quieres cerrar sesión?")
+                        .setCancelText("No")
+                        .setConfirmText("Sí")
+                        .showCancelButton(true)
+                        .setCancelClickListener(sDialog -> {
+                            sDialog.dismissWithAnimation();
+                        })
+                        .setConfirmClickListener(sweetAlertDialog -> {
+                            sweetAlertDialog.dismissWithAnimation();
+                            logout();
+                        })
+                        .show();
+            }
+        });
+    }
+
 
 }
