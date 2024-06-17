@@ -1,14 +1,14 @@
 package com.ricardo.front;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -20,32 +20,24 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
-import com.ricardo.front.adapter.AdaptadorUsuarios;
-import com.ricardo.front.entity.GenericResponse;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ricardo.front.entity.service.Usuario;
-import com.ricardo.front.viewmodel.UsuarioViewModel;
+import com.ricardo.front.utils.DateSerializer;
+import com.ricardo.front.utils.TimeSerializer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
+import java.sql.Time;
 
 public class HomeActivity extends AppCompatActivity {
-    private UsuarioViewModel usuarioViewModel;
     private Toolbar toolbar;
-
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle toggle;
-    List<Usuario> usuariosList;
-    RecyclerView rvLista;
-    AdaptadorUsuarios adaptador;
-    EditText etBuscador;
+    RecyclerView recyclerView;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
@@ -58,29 +50,11 @@ public class HomeActivity extends AppCompatActivity {
 
         this.init();
 
-        // Inicializar ViewModel
-        usuarioViewModel = new ViewModelProvider(this).get(UsuarioViewModel.class);
-
-        // Observa la lista de usuarios
-        usuarioViewModel.getUsuariosLista().observe(this, new Observer<GenericResponse<List<Usuario>>>() {
-            @Override
-            public void onChanged(GenericResponse<List<Usuario>> response) {
-                if (response != null && response.getBody() != null) {
-                    usuariosList.clear();
-                    usuariosList.addAll(response.getBody());
-                    adaptador.notifyDataSetChanged();
-                }
-            }
-        });
-
-        usuarioViewModel.getUsuariosLista();
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
 
     }
 
@@ -90,37 +64,20 @@ public class HomeActivity extends AppCompatActivity {
 
         // Navagation Drawar------------------------------
         drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_View);
+        navigationView = findViewById(R.id.navigationView);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        // Eliminar el título de la aplicación en el Toolbar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
 
         toggle = new ActionBarDrawerToggle(HomeActivity.this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        etBuscador = findViewById(R.id.etBuscador);
-        etBuscador.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                filtrar(s.toString());
-            }
-        });
-
-        rvLista = findViewById(R.id.rvLista);
-        rvLista.setLayoutManager(new GridLayoutManager(this, 1));
-
-        usuariosList = new ArrayList<>();
-
-        adaptador = new AdaptadorUsuarios(HomeActivity.this, usuariosList);
-        rvLista.setAdapter(adaptador);
-
+        recyclerView = findViewById(R.id.recyclerView);
 
         // Drawer item Click event ------
         navigationView.setNavigationItemSelectedListener(new  NavigationView.OnNavigationItemSelectedListener() {
@@ -128,25 +85,28 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
 
-                    case R.id.mUser:
-                        Toast.makeText(HomeActivity.this, "Crear Usuario", Toast.LENGTH_SHORT).show();
+                    case R.id.mTest1:
+                        Toast.makeText(HomeActivity.this, "test uno", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawers();
                         Intent user = new Intent(HomeActivity.this, MainActivity.class);
                         startActivity(user);
                         break;
 
-                    case R.id.mRoles:
-                        Toast.makeText(HomeActivity.this, "Roles", Toast.LENGTH_SHORT).show();
+                    case R.id.mTest2:
+                        Toast.makeText(HomeActivity.this, "test dos", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawers();
                         Intent role = new Intent(HomeActivity.this, MainActivity.class);
                         startActivity(role);
                         break;
 
                     case R.id.mSalir:
-                        editor.putString("isLoggedIn", "false");
-                        editor.commit();
+                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.remove("UsuarioJson");
+                        editor.apply();
                         Toast.makeText(HomeActivity.this, "Cerrando la aplicación", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(HomeActivity.this , MainActivity.class));
+                        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+                        startActivity(intent);
                         finishAffinity();
                         break;
                 }
@@ -154,17 +114,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    public void filtrar(String texto) {
-        ArrayList<Usuario> filtrarLista = new ArrayList<>();
-
-        for(Usuario usuario : usuariosList) {
-            if(usuario.getEmail().toLowerCase().contains(texto.toLowerCase())) {
-                filtrarLista.add(usuario);
-            }
-        }
-        adaptador.filtrar(filtrarLista);
     }
 
 
@@ -186,7 +135,6 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //Método para cerrar sesión
     private void logout() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
@@ -196,6 +144,31 @@ public class HomeActivity extends AppCompatActivity {
         this.overridePendingTransition(R.anim.left_in, R.anim.left_out);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadData();
+    }
 
+    @SuppressLint("UnsafeExperimentalUsageError")
+    private void loadData() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new DateSerializer())
+                .registerTypeAdapter(Time.class, new TimeSerializer())
+                .create();
+        String usuarioJson = sp.getString("UsuarioJson", null);
+
+        if (usuarioJson != null) {
+            Usuario usuario = gson.fromJson(usuarioJson, Usuario.class);
+            NavigationView navigationView = findViewById(R.id.navigationView);
+            View headerView = navigationView.getHeaderView(0);
+            TextView tvCorreo = headerView.findViewById(R.id.tvCorreo);
+            TextView tvRole = headerView.findViewById(R.id.tvRole);
+
+            tvCorreo.setText(usuario.getEmail());
+            tvRole.setText(usuario.getRole());
+        }
+    }
 
 }

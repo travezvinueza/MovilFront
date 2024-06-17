@@ -5,17 +5,17 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#009688"
+    android:background="#9BA1A1"
     tools:context=".MainActivity">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:backgroundTint="#18FFFFFF"
         android:layout_marginTop="100dp"
         android:layout_marginEnd="16dp"
-        app:cardCornerRadius="20dp"
+        app:cardCornerRadius="3dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,15 +23,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/bienvenidoLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FF9800"
-                android:text="Bienvenido! | Bienvenido! | Bienvenido! | Bienvenido! | Bienvenido! | Bienvenido!"
+                android:textColor="#00FFD9"
+                android:text="BIENVENIDO! "
                 android:textAlignment="center"
                 android:singleLine="true"
                 android:textSize="30sp"
@@ -42,16 +41,16 @@
                 android:layout_height="30dp" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/txtInputEmail"
+                android:id="@+id/txtInputUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColorHint="@color/white"
                 app:hintTextColor="@color/white"
                 app:boxStrokeColor="@color/white"
-                android:hint="Email"
+                android:hint="Usuario"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editEmail"
+                    android:id="@+id/editUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
@@ -77,14 +76,26 @@
                     android:inputType="textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/olvidasteContra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="15dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="Olvide mi contraseña?"
+                android:textAlignment="textEnd"
+                android:textColor="#2236B8"
+                android:textSize="20dp" />
 
             <Button
                 android:id="@+id/btnIngresar"
                 android:layout_width="180dp"
                 android:layout_height="45dp"
-                android:backgroundTint="#27952B"
+                android:backgroundTint="#FF9800"
                 android:layout_marginTop="15dp"
-                android:text="Login"
+                android:text="LOGIN"
                 android:onClick="Login"
                 android:layout_gravity="center_horizontal"
                 android:textSize="12sp"
@@ -100,15 +111,16 @@
                     android:id="@+id/textView10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
                     android:layout_marginLeft="10dp"
-                    android:textSize="16dp"
-                    android:text="¿No tienes cuenta?" />
+                    android:text="¿No tienes cuenta?"
+                    android:textColor="@color/white"
+                    android:textSize="16dp" />
 
                 <Button
                     android:id="@+id/btnIniciarSesion"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="end"
                     android:layout_marginLeft="20dp"
                     android:background="#00000000"
                     android:onClick="activityRegistrase"

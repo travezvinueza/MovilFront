@@ -1,16 +1,19 @@
-package com.ricardo.front.entity.service;
+package com.ricardo.front.entity.service.dto;
 
-import com.ricardo.front.entity.service.dto.UsuarioRegistroDTO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-import lombok.*;
-
 @Getter
+@Data
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cliente {
+public class UsuarioClienteDTO {
     private String nombres;
     private String apellidos;
     private String telefono;
@@ -20,7 +23,5 @@ public class Cliente {
     private String provincia;
     private String capital;
     private LocalDate fecha;
-    private Long usuarioId;
-    private UsuarioRegistroDTO usuarioRegistroDTO;
 }
 

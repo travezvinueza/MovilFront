@@ -3,4 +3,11 @@
 
     <string name="open"></string>
     <string name="close"></string>
+
+    <string-array name="tipoDoc">
+        <item>CEDULA</item>
+        <item>RUC</item>
+        <item>PASAPORTE</item>
+    </string-array>
+
 </resources>

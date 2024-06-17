@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -28,9 +29,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.ricardo.front.entity.service.Usuario;
-import com.ricardo.front.utils.DateSerializer;
-import com.ricardo.front.utils.TimeSerializer;
+import com.ricardo.front.utils.LocalDateSerializer;
+import com.ricardo.front.utils.LocalTimeSerializer;
 import com.ricardo.front.viewmodel.UsuarioViewModel;
+
 
 import java.sql.Date;
 import java.sql.Time;
@@ -38,11 +40,11 @@ import java.sql.Time;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class MainActivity extends AppCompatActivity {
-    private EditText editEmail, editPassword;
+    private EditText editUsername, editPassword;
     private Button btnIngresar;
     private UsuarioViewModel viewModel;
-    private TextInputLayout txtInputEmail, txtInputPassword;
-
+    private TextInputLayout txtInputUsername, txtInputPassword;
+    TextView olvidasteContrasena;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,18 +67,41 @@ public class MainActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(UsuarioViewModel.class);
     }
 
-
     private void init() {
-        editEmail = findViewById(R.id.editEmail);
+        editUsername = findViewById(R.id.editUsername);
         editPassword = findViewById(R.id.editPassword);
 
-        txtInputEmail = findViewById(R.id.txtInputEmail);
+        txtInputUsername = findViewById(R.id.txtInputUsername);
         txtInputPassword = findViewById(R.id.txtInputPassword);
         btnIngresar = findViewById(R.id.btnIngresar);
+
+        olvidasteContrasena = findViewById(R.id.olvidasteContra);
+        olvidasteContrasena.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        // Recuperar las credenciales almacenadas
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        String lastUsername = preferences.getString("lastUsername", "");
+//        String lastPassword = preferences.getString("lastPassword", "");
+
+        // Rellenar los campos de inicio de sesión con las credenciales recuperadas
+//        editUsername.setText(lastUsername);
+//        editPassword.setText(lastPassword);
+
+        txtInputUsername = findViewById(R.id.txtInputUsername);
+        txtInputPassword = findViewById(R.id.txtInputPassword);
+        btnIngresar = findViewById(R.id.btnIngresar);
+
         btnIngresar.setOnClickListener(v -> {
             try {
                 if (validar()) {
-                    viewModel.login(editEmail.getText().toString(), editPassword.getText().toString()).observe(this, response -> {
+                    viewModel.login(editUsername.getText().toString(), editPassword.getText().toString()).observe(this, response -> {
                         if (response != null) {
                             switch (response.getRpta()) {
                                 case RPTA_OK:
@@ -88,13 +113,16 @@ public class MainActivity extends AppCompatActivity {
                                     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                                     SharedPreferences.Editor editor = preferences.edit();
                                     Gson g = new GsonBuilder()
-                                            .registerTypeAdapter(Date.class, new DateSerializer())
-                                            .registerTypeAdapter(Time.class, new TimeSerializer())
+                                            .registerTypeAdapter(Date.class, new LocalDateSerializer())
+                                            .registerTypeAdapter(Time.class, new LocalTimeSerializer())
                                             .create();
                                     editor.putString("UsuarioJson", g.toJson(u, new TypeToken<Usuario>() {}.getType()));
+                                    String usuarioJson = g.toJson(u, new TypeToken<Usuario>() {}.getType());
+                                    Log.d("UsuarioJson", usuarioJson);
                                     editor.apply();
-                                    editEmail.setText("");
+                                    editUsername.setText("");
                                     editPassword.setText("");
+
 
                                     if ("ADMIN".equals(u.getRole())) {
                                         startActivity(new Intent(this, AdminActivity.class));
@@ -134,15 +162,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
-        editEmail.addTextChangedListener(new TextWatcher() {
+        editUsername.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                txtInputEmail.setErrorEnabled(false);
+                txtInputUsername.setErrorEnabled(false);
             }
             @Override
             public void afterTextChanged(Editable s) {
@@ -153,12 +180,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 txtInputPassword.setErrorEnabled(false);
             }
-
             @Override
             public void afterTextChanged(Editable s) {
 
@@ -170,13 +195,13 @@ public class MainActivity extends AppCompatActivity {
     private boolean validar() {
         boolean retorno = true;
         String usuario, password;
-        usuario = editEmail.getText().toString();
+        usuario = editUsername.getText().toString();
         password = editPassword.getText().toString();
         if (usuario.isEmpty()) {
-            txtInputEmail.setError("Ingrese su correo electrónico");
+            txtInputUsername.setError("Ingrese su Usuario");
             retorno = false;
         } else {
-            txtInputEmail.setErrorEnabled(false);
+            txtInputUsername.setErrorEnabled(false);
         }
         if (password.isEmpty()) {
             txtInputPassword.setError("Ingrese su contraseña");
@@ -187,37 +212,61 @@ public class MainActivity extends AppCompatActivity {
         return retorno;
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        String pref = preferences.getString("UsuarioJson", "");
-//        if(!pref.equals("")){
-//            new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Se detecto una sesión activa, el login será omitido!");
-//            this.startActivity(new Intent(this, HomeActivity.class));
-//        }
-//    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String pref  = preferences.getString("UsuarioJson", "");
+
+        if (!pref .isEmpty()) {
+            Gson gson = new Gson();
+            Usuario usuario = gson.fromJson(pref , new TypeToken<Usuario>() {}.getType());
+
+            if (usuario != null) {
+                String rol = usuario.getRole();
+                Intent intent;
+                if ("ADMIN".equals(rol)) {
+                    Toast.makeText(this, "Se detecto una cuenta activa!", Toast.LENGTH_SHORT).show();
+//                    new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Se detecto una cuenta activa!");
+                    intent = new Intent(this, AdminActivity.class);
+                } else if ("USER".equals(rol)) {
+                    Toast.makeText(this, "Se detecto una cuenta activa!", Toast.LENGTH_SHORT).show();
+//                    new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Se detecto una cuenta activa!");
+                    intent = new Intent(this, HomeActivity.class);
+                } else {
+                    intent = new Intent(this, MainActivity.class);
+                }
+                startActivity(intent);
+                finish();
+            }
+        }
+    }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("has oprimido el botón atrás")
-                .setContentText("¿Quieres cerrar la aplicación?")
-                .setCancelText("No, Cancelar!").setConfirmText("Sí, Cerrar")
-                .showCancelButton(true).setCancelClickListener(sDialog -> {
+        new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Salir de la Aplicación")
+                .setContentText("¿Realmente quieres cerrar la aplicación?")
+                .setCancelText("No")
+                .setConfirmText("Sí")
+                .showCancelButton(true)
+                .setCancelClickListener(sDialog -> {
                     sDialog.dismissWithAnimation();
-                    new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE).setTitleText("Operación cancelada")
+                    new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+                            .setTitleText("Operación cancelada")
                             .setContentText("No saliste de la app")
                             .show();
-                }).setConfirmClickListener(sweetAlertDialog -> {
+                })
+                .setConfirmClickListener(sweetAlertDialog -> {
                     sweetAlertDialog.dismissWithAnimation();
-                    System.exit(0);
-                }).show();
+                    super.onBackPressed();
+                })
+                .show();
     }
 
     public void activityRegistrase(View view) {
-        Log.d("MainActivity", "activityRegistrase called");
         Intent intent = new Intent(MainActivity.this,RegistrarUsuarioActivity.class);
         startActivity(intent);
     }
+
 }

@@ -1,8 +1,5 @@
 package com.ricardo.front.repository;
 
-import static com.ricardo.front.utils.Global.RPTA_ERROR;
-import static com.ricardo.front.utils.Global.TIPO_RESULT;
-
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -29,14 +26,68 @@ public class UsuarioRepository {
         if (repository == null) {
             synchronized (UsuarioRepository.class) {
                 if (repository == null) {
-                    repository = new UsuarioRepository();  // Punto de interrupción aquí
+                    repository = new UsuarioRepository();
                 }
             }
         }
         return repository;
     }
 
+    // Método para crear un  usuario
+    public LiveData<GenericResponse<Usuario>> crearUsuario(Usuario usuario) {
+        final MutableLiveData<GenericResponse<Usuario>> mld = new MutableLiveData<>();
+        api.crearUsuario(usuario).enqueue(new Callback<GenericResponse<Usuario>>() {
+            @Override
+            public void onResponse(Call<GenericResponse<Usuario>> call, Response<GenericResponse<Usuario>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    mld.setValue(response.body());
+                } else {
+                    GenericResponse<Usuario> errorResponse = new GenericResponse<>();
+                    errorResponse.setMessage("Error en la respuesta de la API");
+                    mld.setValue(errorResponse);
+                    Log.e("ClienteRepository", "Error en la respuesta de la API: " + response.errorBody());
+                }
+            }
 
+            @Override
+            public void onFailure(Call<GenericResponse<Usuario>> call, Throwable t) {
+                GenericResponse<Usuario> errorResponse = new GenericResponse<>();
+                errorResponse.setMessage("Error de red: " + t.getMessage());
+                mld.setValue(errorResponse);
+                Log.e("ClienteRepository", "Error de red", t);
+            }
+        });
+        return mld;
+    }
+
+    // Método para actualizar un usuario
+    public LiveData<GenericResponse<Usuario>> actualizarUsuario(Long id, Usuario usuario) {
+        final MutableLiveData<GenericResponse<Usuario>> mld = new MutableLiveData<>();
+        api.actualizarUsuario(id, usuario).enqueue(new Callback<GenericResponse<Usuario>>() {
+            @Override
+            public void onResponse(Call<GenericResponse<Usuario>> call, Response<GenericResponse<Usuario>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    mld.setValue(response.body());
+                } else {
+                    GenericResponse<Usuario> errorResponse = new GenericResponse<>();
+                    errorResponse.setMessage("Error en la respuesta de la API");
+                    mld.setValue(errorResponse);
+                    Log.e("UsuarioRepository", "Error en la respuesta de la API: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GenericResponse<Usuario>> call, Throwable t) {
+                GenericResponse<Usuario> errorResponse = new GenericResponse<>();
+                errorResponse.setMessage("Error de red: " + t.getMessage());
+                mld.setValue(errorResponse);
+                Log.e("UsuarioRepository", "Error de red", t);
+            }
+        });
+        return mld;
+    }
+
+    // Método para traer una lista de los usuarios
     public LiveData<GenericResponse<List<Usuario>>> getUsuariosLista() {
         final MutableLiveData<GenericResponse<List<Usuario>>> mld = new MutableLiveData<>();
         this.api.getUsuariosLista().enqueue(new Callback<GenericResponse<List<Usuario>>>() {
@@ -60,9 +111,10 @@ public class UsuarioRepository {
         return mld;
     }
 
-    public LiveData<GenericResponse<Usuario>> login(String email, String contrasenia){
+    // Método para loguearse
+    public LiveData<GenericResponse<Usuario>> login(String username, String contrasenia){
         final MutableLiveData<GenericResponse<Usuario>> mld = new MutableLiveData<>();
-        this.api.login(email, contrasenia).enqueue(new Callback<GenericResponse<Usuario>>() {
+        this.api.login(username, contrasenia).enqueue(new Callback<GenericResponse<Usuario>>() {
             @Override
             public void onResponse(Call<GenericResponse<Usuario>> call, Response<GenericResponse<Usuario>> response) {
                 mld.setValue(response.body());
@@ -97,6 +149,41 @@ public class UsuarioRepository {
         return mld;
     }
 
+    // Método para enviar email y recuoerar la contraseña del usuario
+    public LiveData<GenericResponse<String>> forgotPassword(String email) {
+        final MutableLiveData<GenericResponse<String>> mld = new MutableLiveData<>();
+        api.forgotPassword(email).enqueue(new Callback<GenericResponse<String>>() {
+            @Override
+            public void onResponse(Call<GenericResponse<String>> call, Response<GenericResponse<String>> response) {
+                mld.setValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<GenericResponse<String>> call, Throwable t) {
+                mld.setValue(new GenericResponse<>());
+                t.printStackTrace();
+            }
+        });
+        return mld;
+    }
+
+    // Método para resetPassword del usuario
+    public LiveData<GenericResponse<String>> resetPassword(String otp, String newPassword) {
+        final MutableLiveData<GenericResponse<String>> mld = new MutableLiveData<>();
+        api.resetPassword(otp, newPassword).enqueue(new Callback<GenericResponse<String>>() {
+            @Override
+            public void onResponse(Call<GenericResponse<String>> call, Response<GenericResponse<String>> response) {
+                mld.setValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<GenericResponse<String>> call, Throwable t) {
+                mld.setValue(new GenericResponse<>());
+                t.printStackTrace();
+            }
+        });
+        return mld;
+    }
 
     // Método para eliminar un usuario por su ID
     public LiveData<GenericResponse<Usuario>> eliminarUsuario(Long id) {
@@ -109,24 +196,6 @@ public class UsuarioRepository {
             @Override
             public void onFailure(Call<GenericResponse<Usuario>> call, Throwable t) {
                 mld.setValue(new GenericResponse());
-                System.out.println("Se ha producido un error : " + t.getMessage());
-                t.printStackTrace();
-            }
-        });
-        return mld;
-    }
-
-    public LiveData<GenericResponse<Usuario>> save (Usuario u){
-        final MutableLiveData<GenericResponse<Usuario>> mld = new MutableLiveData<>();
-        this.api.save(u).enqueue(new Callback<GenericResponse<Usuario>>() {
-            @Override
-            public void onResponse(Call<GenericResponse<Usuario>> call, Response<GenericResponse<Usuario>> response) {
-                mld.setValue(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<GenericResponse<Usuario>> call, Throwable t) {
-                mld.setValue(new GenericResponse<>());
                 System.out.println("Se ha producido un error : " + t.getMessage());
                 t.printStackTrace();
             }
