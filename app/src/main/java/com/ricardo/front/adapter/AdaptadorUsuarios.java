@@ -14,7 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ricardo.front.AdminActivity;
 import com.ricardo.front.EditUserActivity;
 import com.ricardo.front.R;
-import com.ricardo.front.entity.service.Usuario;
+import com.ricardo.front.model.UsuarioClienteDTO;
+import com.ricardo.front.model.UsuarioDTO;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -23,9 +24,9 @@ import java.util.List;
 
 public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.UsuarioViewHolder>{
     Context context;
-    List<Usuario> usuariosList;
+    List<UsuarioDTO> usuariosList;
 
-    public AdaptadorUsuarios(Context context, List<Usuario> usuariosList) {
+    public AdaptadorUsuarios(Context context, List<UsuarioDTO> usuariosList) {
         this.context = context;
         this.usuariosList = usuariosList;
     }
@@ -40,25 +41,39 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
 
     @Override
     public void onBindViewHolder(@NonNull AdaptadorUsuarios.UsuarioViewHolder holder, int position) {
-        Usuario usuario=usuariosList.get(position);
-        holder.tvId.setText(String.valueOf(usuario.getId()));
-        holder.tv0.setText(usuario.getUsername());
-        holder.tv1.setText(usuario.getRole());
-        holder.tv2.setText(usuario.getEmail());
-        holder.tv3.setText(usuario.getContrasena());
-        holder.tv4.setText(String.valueOf(usuario.isVigencia()));
+        UsuarioDTO usuarioDTO = usuariosList.get(position);
+        holder.tvId.setText(String.valueOf(usuarioDTO.getId()));
+        holder.tv0.setText(usuarioDTO.getUsername());
+        holder.tv1.setText(usuarioDTO.getRole());
+        holder.tv2.setText(usuarioDTO.getEmail());
+        holder.tv3.setText(usuarioDTO.getContrasena());
+        holder.tv4.setText(String.valueOf(usuarioDTO.isVigencia()));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        if (usuario.getFecha() != null) {
-            holder.tvFecha.setText(usuario.getFecha().format(formatter));
+        if (usuarioDTO.getFecha() != null) {
+            holder.tvFecha.setText(usuarioDTO.getFecha().format(formatter));
         } else {
             holder.tvFecha.setText("Fecha no disponible");
         }
 
-        if (usuario.isVigencia()) {
+        if (usuarioDTO.isVigencia()) {
             holder.btnToggleVigencia.setImageResource(R.drawable.ic_unlocked);
         } else {
             holder.btnToggleVigencia.setImageResource(R.drawable.ic_locked);
+        }
+
+        // Obtener y asignar datos de UsuarioClienteDTO
+        UsuarioClienteDTO cliente = usuarioDTO.getUsuarioClienteDTO();
+        if (cliente != null) {
+            holder.tvNombres.setText(cliente.getNombres() != null ? cliente.getNombres() : "Nombres no disponible");
+            holder.tvApellidos.setText(cliente.getApellidos() != null ? cliente.getApellidos() : "Apellidos no disponible");
+            holder.tvTelefono.setText(cliente.getTelefono() != null ? cliente.getTelefono() : "Telefono no disponible");
+            // Asignar otros campos de cliente si es necesario
+        } else {
+            holder.tvNombres.setText("Nombres no disponible");
+            holder.tvApellidos.setText("Apellidos no disponible");
+            holder.tvTelefono.setText("Telefono no disponible");
+            // Manejar otros campos de cliente si son null
         }
 
 
@@ -76,21 +91,21 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, EditUserActivity.class);
-                intent.putExtra("Id", usuario.getId());
-                intent.putExtra("Role", usuario.getRole());
-                intent.putExtra("Username", usuario.getUsername());
-                intent.putExtra("Correo", usuario.getEmail());
-                intent.putExtra("Contrasena", usuario.getContrasena());
-                intent.putExtra("Vigencia", usuario.isVigencia());
-                intent.putExtra("Nombres", usuario.getUsuarioClienteDTO().getNombres());
-                intent.putExtra("Apellidos", usuario.getUsuarioClienteDTO().getApellidos());
-                intent.putExtra("Telefono", usuario.getUsuarioClienteDTO().getTelefono());
-                intent.putExtra("TipoDoc", usuario.getUsuarioClienteDTO().getTipoDoc());
-                intent.putExtra("NumDoc", usuario.getUsuarioClienteDTO().getNumDoc());
-                intent.putExtra("Direccion", usuario.getUsuarioClienteDTO().getDireccion());
-                intent.putExtra("Provincia", usuario.getUsuarioClienteDTO().getProvincia());
-                intent.putExtra("Capital", usuario.getUsuarioClienteDTO().getCapital());
-                intent.putExtra("Fecha", usuario.getUsuarioClienteDTO().getFecha().toString());
+                intent.putExtra("Id", usuarioDTO.getId());
+                intent.putExtra("Role", usuarioDTO.getRole());
+                intent.putExtra("Username", usuarioDTO.getUsername());
+                intent.putExtra("Correo", usuarioDTO.getEmail());
+                intent.putExtra("Contrasena", usuarioDTO.getContrasena());
+                intent.putExtra("Vigencia", usuarioDTO.isVigencia());
+                intent.putExtra("Nombres", usuarioDTO.getUsuarioClienteDTO().getNombres());
+                intent.putExtra("Apellidos", usuarioDTO.getUsuarioClienteDTO().getApellidos());
+                intent.putExtra("Telefono", usuarioDTO.getUsuarioClienteDTO().getTelefono());
+                intent.putExtra("TipoDoc", usuarioDTO.getUsuarioClienteDTO().getTipoDoc());
+                intent.putExtra("NumDoc", usuarioDTO.getUsuarioClienteDTO().getNumDoc());
+                intent.putExtra("Direccion", usuarioDTO.getUsuarioClienteDTO().getDireccion());
+                intent.putExtra("Provincia", usuarioDTO.getUsuarioClienteDTO().getProvincia());
+                intent.putExtra("Capital", usuarioDTO.getUsuarioClienteDTO().getCapital());
+                intent.putExtra("Fecha", usuarioDTO.getUsuarioClienteDTO().getFecha().toString());
                 context.startActivity(intent);
             }
         });
@@ -98,7 +113,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
         holder.btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long idUsuario = usuario.getId();
+                long idUsuario = usuarioDTO.getId();
                ((AdminActivity) context).eliminarUsuario(idUsuario);
             }
         });
@@ -109,11 +124,11 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
                 // Obtener la posición actual
                 int currentPosition = holder.getAdapterPosition();
                 if (currentPosition != RecyclerView.NO_POSITION) {
-                    Usuario usuarioActual = usuariosList.get(currentPosition);
-                    boolean nuevaVigencia = !usuarioActual.isVigencia();
+                    UsuarioDTO usuarioDTOActual = usuariosList.get(currentPosition);
+                    boolean nuevaVigencia = !usuarioDTOActual.isVigencia();
 
                     // Actualizar el estado de vigencia en el ViewModel
-                    ((AdminActivity) context).toggleUsuarioVigencia(usuarioActual.getId(), nuevaVigencia);
+                    ((AdminActivity) context).toggleUsuarioVigencia(usuarioDTOActual.getId(), nuevaVigencia);
 
                 }
             }
@@ -127,8 +142,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
     }
 
     public class UsuarioViewHolder extends RecyclerView.ViewHolder{
-        TextView tvId, tv0, tv1 , tv2, tv3, tv4, tvFecha;
+        TextView tvId, tv0, tv1 , tv2, tv3, tv4, tvFecha,tvNombres, tvApellidos, tvTelefono;
         ImageView btnEliminar, btnEditar, btnToggleVigencia;
+
         public UsuarioViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -142,12 +158,15 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
             btnEliminar = itemView.findViewById(R.id.btnEliminar);
             btnEditar = itemView.findViewById(R.id.btnEditar);
             btnToggleVigencia = itemView.findViewById(R.id.btnToggleVigencia);
+            tvNombres = itemView.findViewById(R.id.tvNombres);
+            tvApellidos = itemView.findViewById(R.id.tvApellidos);
+            tvTelefono = itemView.findViewById(R.id.tvTelefono);
 
         }
     }
 
-    public void filtrar(ArrayList<Usuario> filtroUsuarios) {
-        this.usuariosList = filtroUsuarios;
+    public void filtrar(ArrayList<UsuarioDTO> filtroUsuarioDTOS) {
+        this.usuariosList = filtroUsuarioDTOS;
         notifyDataSetChanged();
     }
 }

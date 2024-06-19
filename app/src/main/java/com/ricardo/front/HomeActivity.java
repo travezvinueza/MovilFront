@@ -26,9 +26,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ricardo.front.entity.service.Usuario;
-import com.ricardo.front.utils.DateSerializer;
-import com.ricardo.front.utils.TimeSerializer;
+import com.ricardo.front.model.UsuarioDTO;
+import com.ricardo.front.util.DateSerializer;
+import com.ricardo.front.util.TimeSerializer;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -164,14 +164,18 @@ public class HomeActivity extends AppCompatActivity {
         String usuarioJson = sp.getString("UsuarioJson", null);
 
         if (usuarioJson != null) {
-            Usuario usuario = gson.fromJson(usuarioJson, Usuario.class);
+            UsuarioDTO usuarioDTO = gson.fromJson(usuarioJson, UsuarioDTO.class);
             NavigationView navigationView = findViewById(R.id.navigationView);
             View headerView = navigationView.getHeaderView(0);
             TextView tvCorreo = headerView.findViewById(R.id.tvCorreo);
             TextView tvRole = headerView.findViewById(R.id.tvRole);
+            TextView tvNombre = headerView.findViewById(R.id.tvNombre);
 
-            tvCorreo.setText(usuario.getEmail());
-            tvRole.setText(usuario.getRole());
+            tvNombre.setText(usuarioDTO.getUsuarioClienteDTO().getNombres());
+
+            tvCorreo.setText(usuarioDTO.getEmail());
+            tvRole.setText(usuarioDTO.getRole());
+            tvNombre.setText(usuarioDTO.getRole());
         }
     }
 

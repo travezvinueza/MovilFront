@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.ricardo.front.api.ConfigApi;
 import com.ricardo.front.api.UsuarioApi;
-import com.ricardo.front.entity.GenericResponse;
-import com.ricardo.front.entity.service.Usuario;
+import com.ricardo.front.util.GenericResponse;
+import com.ricardo.front.model.UsuarioDTO;
 
 import java.util.List;
 
@@ -34,15 +34,15 @@ public class UsuarioRepository {
     }
 
     // Método para crear un  usuario
-    public LiveData<GenericResponse<Usuario>> crearUsuario(Usuario usuario) {
-        final MutableLiveData<GenericResponse<Usuario>> mld = new MutableLiveData<>();
-        api.crearUsuario(usuario).enqueue(new Callback<GenericResponse<Usuario>>() {
+    public LiveData<GenericResponse<UsuarioDTO>> crearUsuario(UsuarioDTO usuarioDTO) {
+        final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
+        api.crearUsuario(usuarioDTO).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<Usuario>> call, Response<GenericResponse<Usuario>> response) {
+            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     mld.setValue(response.body());
                 } else {
-                    GenericResponse<Usuario> errorResponse = new GenericResponse<>();
+                    GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
                     errorResponse.setMessage("Error en la respuesta de la API");
                     mld.setValue(errorResponse);
                     Log.e("ClienteRepository", "Error en la respuesta de la API: " + response.errorBody());
@@ -50,8 +50,8 @@ public class UsuarioRepository {
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<Usuario>> call, Throwable t) {
-                GenericResponse<Usuario> errorResponse = new GenericResponse<>();
+            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
+                GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
                 errorResponse.setMessage("Error de red: " + t.getMessage());
                 mld.setValue(errorResponse);
                 Log.e("ClienteRepository", "Error de red", t);
@@ -60,16 +60,15 @@ public class UsuarioRepository {
         return mld;
     }
 
-    // Método para actualizar un usuario
-    public LiveData<GenericResponse<Usuario>> actualizarUsuario(Long id, Usuario usuario) {
-        final MutableLiveData<GenericResponse<Usuario>> mld = new MutableLiveData<>();
-        api.actualizarUsuario(id, usuario).enqueue(new Callback<GenericResponse<Usuario>>() {
+    public LiveData<GenericResponse<UsuarioDTO>> getByIdUsuario(Long id) {
+        final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
+        api.getByIdUsuario(id).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<Usuario>> call, Response<GenericResponse<Usuario>> response) {
+            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     mld.setValue(response.body());
                 } else {
-                    GenericResponse<Usuario> errorResponse = new GenericResponse<>();
+                    GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
                     errorResponse.setMessage("Error en la respuesta de la API");
                     mld.setValue(errorResponse);
                     Log.e("UsuarioRepository", "Error en la respuesta de la API: " + response.errorBody());
@@ -77,8 +76,35 @@ public class UsuarioRepository {
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<Usuario>> call, Throwable t) {
-                GenericResponse<Usuario> errorResponse = new GenericResponse<>();
+            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
+                GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
+                errorResponse.setMessage("Error de red: " + t.getMessage());
+                mld.setValue(errorResponse);
+                Log.e("UsuarioRepository", "Error de red", t);
+            }
+        });
+        return mld;
+    }
+
+    // Método para actualizar un usuario
+    public LiveData<GenericResponse<UsuarioDTO>> actualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
+        final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
+        api.actualizarUsuario(id, usuarioDTO).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
+            @Override
+            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    mld.setValue(response.body());
+                } else {
+                    GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
+                    errorResponse.setMessage("Error en la respuesta de la API");
+                    mld.setValue(errorResponse);
+                    Log.e("UsuarioRepository", "Error en la respuesta de la API: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
+                GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
                 errorResponse.setMessage("Error de red: " + t.getMessage());
                 mld.setValue(errorResponse);
                 Log.e("UsuarioRepository", "Error de red", t);
@@ -88,11 +114,11 @@ public class UsuarioRepository {
     }
 
     // Método para traer una lista de los usuarios
-    public LiveData<GenericResponse<List<Usuario>>> getUsuariosLista() {
-        final MutableLiveData<GenericResponse<List<Usuario>>> mld = new MutableLiveData<>();
-        this.api.getUsuariosLista().enqueue(new Callback<GenericResponse<List<Usuario>>>() {
+    public LiveData<GenericResponse<List<UsuarioDTO>>> getUsuariosLista() {
+        final MutableLiveData<GenericResponse<List<UsuarioDTO>>> mld = new MutableLiveData<>();
+        this.api.getUsuariosLista().enqueue(new Callback<GenericResponse<List<UsuarioDTO>>>() {
             @Override
-            public void onResponse(Call<GenericResponse<List<Usuario>>> call, Response<GenericResponse<List<Usuario>>> response) {
+            public void onResponse(Call<GenericResponse<List<UsuarioDTO>>> call, Response<GenericResponse<List<UsuarioDTO>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d("UsuarioRepository", "Lista de usuarios recibida: " + response.body().getBody());
                 } else {
@@ -102,7 +128,7 @@ public class UsuarioRepository {
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<List<Usuario>>> call, Throwable t) {
+            public void onFailure(Call<GenericResponse<List<UsuarioDTO>>> call, Throwable t) {
                 Log.e("UsuarioRepository", "Fallo en la llamada a la API: " + t.getMessage());
                 mld.setValue(new GenericResponse<>());
                 t.printStackTrace();
@@ -112,16 +138,16 @@ public class UsuarioRepository {
     }
 
     // Método para loguearse
-    public LiveData<GenericResponse<Usuario>> login(String username, String contrasenia){
-        final MutableLiveData<GenericResponse<Usuario>> mld = new MutableLiveData<>();
-        this.api.login(username, contrasenia).enqueue(new Callback<GenericResponse<Usuario>>() {
+    public LiveData<GenericResponse<UsuarioDTO>> login(String username, String contrasenia){
+        final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
+        this.api.login(username, contrasenia).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<Usuario>> call, Response<GenericResponse<Usuario>> response) {
+            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
                 mld.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<Usuario>> call, Throwable t) {
+            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
                 mld.setValue(new GenericResponse());
                 System.out.println("Se ha producido un error al iniciar sesión: " + t.getMessage());
                 t.printStackTrace();
@@ -131,16 +157,16 @@ public class UsuarioRepository {
     }
 
     // Método para activar y desactivar un usuario por su ID
-    public LiveData<GenericResponse<Usuario>> toggleVigencia(long id, boolean vigencia) {
-        final MutableLiveData<GenericResponse<Usuario>> mld = new MutableLiveData<>();
-        api.toggleVigencia(id, vigencia).enqueue(new Callback<GenericResponse<Usuario>>() {
+    public LiveData<GenericResponse<UsuarioDTO>> toggleVigencia(long id, boolean vigencia) {
+        final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
+        api.toggleVigencia(id, vigencia).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<Usuario>> call, Response<GenericResponse<Usuario>> response) {
+            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
                     mld.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<Usuario>> call, Throwable t) {
+            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
                 mld.setValue(new GenericResponse());
                 System.out.println("Se ha producido un error : " + t.getMessage());
                 t.printStackTrace();
@@ -186,15 +212,15 @@ public class UsuarioRepository {
     }
 
     // Método para eliminar un usuario por su ID
-    public LiveData<GenericResponse<Usuario>> eliminarUsuario(Long id) {
-        final MutableLiveData<GenericResponse<Usuario>> mld = new MutableLiveData<>();
-        api.eliminarUsuario(id).enqueue(new Callback<GenericResponse<Usuario>>() {
+    public LiveData<GenericResponse<UsuarioDTO>> eliminarUsuario(Long id) {
+        final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
+        api.eliminarUsuario(id).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<Usuario>> call, Response<GenericResponse<Usuario>> response) {
+            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
                     mld.setValue(response.body());
             }
             @Override
-            public void onFailure(Call<GenericResponse<Usuario>> call, Throwable t) {
+            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
                 mld.setValue(new GenericResponse());
                 System.out.println("Se ha producido un error : " + t.getMessage());
                 t.printStackTrace();

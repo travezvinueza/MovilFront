@@ -1,6 +1,4 @@
-package com.ricardo.front.entity.service;
-
-import com.ricardo.front.entity.service.dto.UsuarioRegistroDTO;
+package com.ricardo.front.model;
 
 import java.time.LocalDate;
 
@@ -10,7 +8,8 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cliente {
+public class ClienteDTO {
+    private Long id;
     private String nombres;
     private String apellidos;
     private String telefono;
@@ -21,6 +20,6 @@ public class Cliente {
     private String capital;
     private LocalDate fecha;
     private Long usuarioId;
-    private UsuarioRegistroDTO usuarioRegistroDTO;
+    private ClienteUsuarioDTO clienteUsuarioDTO;
 }
 

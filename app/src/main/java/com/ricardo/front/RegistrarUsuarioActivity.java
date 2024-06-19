@@ -22,9 +22,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
-import com.ricardo.front.entity.service.Cliente;
-import com.ricardo.front.entity.service.dto.UsuarioRegistroDTO;
-import com.ricardo.front.utils.Global;
+import com.ricardo.front.model.ClienteDTO;
+import com.ricardo.front.model.ClienteUsuarioDTO;
+import com.ricardo.front.util.Global;
 import com.ricardo.front.viewmodel.ClienteViewModel;
 import com.ricardo.front.viewmodel.UsuarioViewModel;
 
@@ -196,23 +196,23 @@ public class RegistrarUsuarioActivity extends AppCompatActivity {
 
     private void guardarDatos() {
         if (validar()) {
-            Cliente cliente = new Cliente();
+            ClienteDTO clienteDTO = new ClienteDTO();
             try {
-                cliente.setTipoDoc(etTipoDoc.getText().toString());
-                cliente.setNumDoc(etNumDoc.getText().toString());
-                cliente.setDireccion(etDireccion.getText().toString());
-                cliente.setFecha(LocalDate.now());
+                clienteDTO.setTipoDoc(etTipoDoc.getText().toString());
+                clienteDTO.setNumDoc(etNumDoc.getText().toString());
+                clienteDTO.setDireccion(etDireccion.getText().toString());
+                clienteDTO.setFecha(LocalDate.now());
 
-                UsuarioRegistroDTO usuarioRegistroDTO = new UsuarioRegistroDTO();
-                usuarioRegistroDTO.setUsername(etUsername.getText().toString());
-                usuarioRegistroDTO.setEmail(etEmail.getText().toString());
-                usuarioRegistroDTO.setContrasena(etPassword.getText().toString());
-                usuarioRegistroDTO.setVigencia(true);
-                usuarioRegistroDTO.setFecha(LocalDate.now());
+                ClienteUsuarioDTO clienteUsuarioDTO = new ClienteUsuarioDTO();
+                clienteUsuarioDTO.setUsername(etUsername.getText().toString());
+                clienteUsuarioDTO.setEmail(etEmail.getText().toString());
+                clienteUsuarioDTO.setContrasena(etPassword.getText().toString());
+                clienteUsuarioDTO.setVigencia(true);
+                clienteUsuarioDTO.setFecha(LocalDate.now());
 
-                cliente.setUsuarioRegistroDTO(usuarioRegistroDTO);
+                clienteDTO.setClienteUsuarioDTO(clienteUsuarioDTO);
 
-                clienteViewModel.guardarCliente(cliente).observe(this, response -> {
+                clienteViewModel.guardarCliente(clienteDTO).observe(this, response -> {
                     if (response != null && response.getRpta() == Global.RPTA_OK) {
                         Toast.makeText(RegistrarUsuarioActivity.this, (response.getMessage()), Toast.LENGTH_SHORT).show();
 

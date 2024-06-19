@@ -6,8 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.ricardo.front.entity.GenericResponse;
-import com.ricardo.front.entity.service.Cliente;
+import com.ricardo.front.util.GenericResponse;
+import com.ricardo.front.model.ClienteDTO;
 import com.ricardo.front.repository.ClienteRepository;
 
 public class ClienteViewModel extends AndroidViewModel {
@@ -18,7 +18,7 @@ public class ClienteViewModel extends AndroidViewModel {
         this.repository = ClienteRepository.getInstance();
     }
 
-    public LiveData<GenericResponse<Cliente>> guardarCliente(Cliente c){
+    public LiveData<GenericResponse<ClienteDTO>> guardarCliente(ClienteDTO c){
         return  repository.guardarCliente(c);
     }
 }

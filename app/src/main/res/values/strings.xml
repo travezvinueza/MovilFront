@@ -10,4 +10,10 @@
         <item>PASAPORTE</item>
     </string-array>
 
+    <string-array name="opciones_rol">
+        <item>ADMIN</item>
+        <item>USER</item>
+    </string-array>
+    <string name="seleccionar_rol">Selecciona un rol</string>
+
 </resources>

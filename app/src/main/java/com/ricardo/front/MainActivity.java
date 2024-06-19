@@ -1,8 +1,8 @@
 package com.ricardo.front;
 
-import static com.ricardo.front.utils.Global.RPTA_ERROR;
-import static com.ricardo.front.utils.Global.RPTA_OK;
-import static com.ricardo.front.utils.Global.RPTA_WARNING;
+import static com.ricardo.front.util.Global.RPTA_ERROR;
+import static com.ricardo.front.util.Global.RPTA_OK;
+import static com.ricardo.front.util.Global.RPTA_WARNING;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,9 +29,9 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.ricardo.front.entity.service.Usuario;
-import com.ricardo.front.utils.LocalDateSerializer;
-import com.ricardo.front.utils.LocalTimeSerializer;
+import com.ricardo.front.model.UsuarioDTO;
+import com.ricardo.front.util.LocalDateSerializer;
+import com.ricardo.front.util.LocalTimeSerializer;
 import com.ricardo.front.viewmodel.UsuarioViewModel;
 
 
@@ -111,15 +111,15 @@ public class MainActivity extends AppCompatActivity {
 //                                    new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
 //                                            .setTitleText(response.getMessage())
 //                                            .show();
-                                    Usuario u = response.getBody();
+                                    UsuarioDTO u = response.getBody();
                                     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                                     SharedPreferences.Editor editor = preferences.edit();
                                     Gson g = new GsonBuilder()
                                             .registerTypeAdapter(Date.class, new LocalDateSerializer())
                                             .registerTypeAdapter(Time.class, new LocalTimeSerializer())
                                             .create();
-                                    editor.putString("UsuarioJson", g.toJson(u, new TypeToken<Usuario>() {}.getType()));
-                                    String usuarioJson = g.toJson(u, new TypeToken<Usuario>() {}.getType());
+                                    editor.putString("UsuarioJson", g.toJson(u, new TypeToken<UsuarioDTO>() {}.getType()));
+                                    String usuarioJson = g.toJson(u, new TypeToken<UsuarioDTO>() {}.getType());
                                     Log.d("UsuarioJson", usuarioJson);
                                     editor.apply();
                                     editUsername.setText("");
@@ -222,10 +222,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (!pref .isEmpty()) {
             Gson gson = new Gson();
-            Usuario usuario = gson.fromJson(pref , new TypeToken<Usuario>() {}.getType());
+            UsuarioDTO usuarioDTO = gson.fromJson(pref , new TypeToken<UsuarioDTO>() {}.getType());
 
-            if (usuario != null) {
-                String rol = usuario.getRole();
+            if (usuarioDTO != null) {
+                String rol = usuarioDTO.getRole();
                 Intent intent;
                 if ("ADMIN".equals(rol)) {
                     Toast.makeText(this, "Se detecto una cuenta activa!", Toast.LENGTH_SHORT).show();

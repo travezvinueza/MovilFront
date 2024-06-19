@@ -107,6 +107,24 @@
 
             </LinearLayout>
 
+            <!-- Views for UsuarioClienteDTO -->
+            <TextView
+                android:id="@+id/tvNombres"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombres" />
+
+            <TextView
+                android:id="@+id/tvApellidos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apellidos" />
+
+            <TextView
+                android:id="@+id/tvTelefono"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Telefono" />
         </LinearLayout>
 
         <LinearLayout

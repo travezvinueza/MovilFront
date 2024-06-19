@@ -3,10 +3,10 @@ package com.ricardo.front.api;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ricardo.front.utils.DateSerializer;
-import com.ricardo.front.utils.LocalDateSerializer;
-import com.ricardo.front.utils.LocalTimeSerializer;
-import com.ricardo.front.utils.TimeSerializer;
+import com.ricardo.front.util.DateSerializer;
+import com.ricardo.front.util.LocalDateSerializer;
+import com.ricardo.front.util.LocalTimeSerializer;
+import com.ricardo.front.util.TimeSerializer;
 
 
 import java.sql.Date;

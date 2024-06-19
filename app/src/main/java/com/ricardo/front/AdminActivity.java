@@ -34,10 +34,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ricardo.front.adapter.AdaptadorUsuarios;
 import com.ricardo.front.databinding.ActivityAdminBinding;
-import com.ricardo.front.entity.GenericResponse;
-import com.ricardo.front.entity.service.Usuario;
-import com.ricardo.front.utils.DateSerializer;
-import com.ricardo.front.utils.TimeSerializer;
+import com.ricardo.front.util.GenericResponse;
+import com.ricardo.front.model.UsuarioDTO;
+import com.ricardo.front.util.DateSerializer;
+import com.ricardo.front.util.TimeSerializer;
 import com.ricardo.front.viewmodel.UsuarioViewModel;
 
 import java.sql.Date;
@@ -50,7 +50,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class AdminActivity extends AppCompatActivity {
     private ActivityAdminBinding binding;
     private UsuarioViewModel usuarioViewModel;
-    private List<Usuario> usuariosList;
+    private List<UsuarioDTO> usuariosList;
     private RecyclerView rvLista;
     private AdaptadorUsuarios adaptador;
     DrawerLayout drawerLayout;
@@ -108,9 +108,9 @@ public class AdminActivity extends AppCompatActivity {
         usuarioViewModel = new ViewModelProvider(this).get(UsuarioViewModel.class);
 
         // Observa la lista de usuarios
-        usuarioViewModel.getUsuariosLista().observe(this, new Observer<GenericResponse<List<Usuario>>>() {
+        usuarioViewModel.getUsuariosLista().observe(this, new Observer<GenericResponse<List<UsuarioDTO>>>() {
             @Override
-            public void onChanged(GenericResponse<List<Usuario>> response) {
+            public void onChanged(GenericResponse<List<UsuarioDTO>> response) {
                 if (response != null && response.getBody() != null) {
                     Log.d("AdminActivity", "Usuarios obtenidos: " + response.getBody().size());
                     usuariosList.clear();
@@ -185,11 +185,11 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     public void filtrar(String texto) {
-        ArrayList<Usuario> filtrarLista = new ArrayList<>();
+        ArrayList<UsuarioDTO> filtrarLista = new ArrayList<>();
 
-        for(Usuario usuario : usuariosList) {
-            if(usuario.getUsername().toLowerCase().contains(texto.toLowerCase())) {
-                filtrarLista.add(usuario);
+        for(UsuarioDTO usuarioDTO : usuariosList) {
+            if(usuarioDTO.getUsername().toLowerCase().contains(texto.toLowerCase())) {
+                filtrarLista.add(usuarioDTO);
             }
         }
         adaptador.filtrar(filtrarLista);
@@ -236,14 +236,14 @@ public class AdminActivity extends AppCompatActivity {
 
     // Método para cambiar la vigencia de un usuario por su ID
     public void toggleUsuarioVigencia(long idUsuario, boolean nuevaVigencia) {
-        usuarioViewModel.toggleVigencia(idUsuario, nuevaVigencia).observe(this, new Observer<GenericResponse<Usuario>>() {
+        usuarioViewModel.toggleVigencia(idUsuario, nuevaVigencia).observe(this, new Observer<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onChanged(GenericResponse<Usuario> response) {
+            public void onChanged(GenericResponse<UsuarioDTO> response) {
                 if (response != null && response.getBody() != null) {
                     // Actualizar la lista de usuarios en adaptador
-                    for (Usuario usuario : usuariosList) {
-                        if (usuario.getId() == idUsuario) {
-                            usuario.setVigencia(nuevaVigencia);
+                    for (UsuarioDTO usuarioDTO : usuariosList) {
+                        if (usuarioDTO.getId() == idUsuario) {
+                            usuarioDTO.setVigencia(nuevaVigencia);
                             adaptador.notifyDataSetChanged();
                             break;
                         }
@@ -273,7 +273,7 @@ public class AdminActivity extends AppCompatActivity {
                 .create();
         String usuarioJson = sp.getString("UsuarioJson", null);
         if(usuarioJson != null){
-            final Usuario u = g.fromJson(usuarioJson, Usuario.class);
+            final UsuarioDTO u = g.fromJson(usuarioJson, UsuarioDTO.class);
             final View vistaHeader = binding.navView.getHeaderView(0);
             final TextView tvCorreo = vistaHeader.findViewById(R.id.tvCorreo),
                            tvRole = vistaHeader.findViewById(R.id.tvRole);

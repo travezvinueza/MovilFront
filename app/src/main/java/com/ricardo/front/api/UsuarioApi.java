@@ -1,7 +1,7 @@
 package com.ricardo.front.api;
 
-import com.ricardo.front.entity.GenericResponse;
-import com.ricardo.front.entity.service.Usuario;
+import com.ricardo.front.util.GenericResponse;
+import com.ricardo.front.model.UsuarioDTO;
 
 import java.util.List;
 
@@ -20,23 +20,26 @@ public interface UsuarioApi {
     String base = "api/usuarios";
 
     @POST(base + "/create")
-    Call<GenericResponse<Usuario>> crearUsuario(@Body Usuario usuario);
+    Call<GenericResponse<UsuarioDTO>> crearUsuario(@Body UsuarioDTO usuarioDTO);
+
+    @GET(base + "/getById/{id}")
+    Call<GenericResponse<UsuarioDTO>> getByIdUsuario(@Path("id") Long  id);
 
     @PUT(base + "/update/{id}")
-    Call<GenericResponse<Usuario>> actualizarUsuario(@Path("id") Long  id, @Body Usuario usuario);
+    Call<GenericResponse<UsuarioDTO>> actualizarUsuario(@Path("id") Long  id, @Body UsuarioDTO usuarioDTO);
 
     @FormUrlEncoded
     @POST(base + "/login")
-    Call<GenericResponse<Usuario>> login(@Field("username") String username, @Field("password") String contrasenia);
+    Call<GenericResponse<UsuarioDTO>> login(@Field("username") String username, @Field("password") String contrasenia);
 
     @GET(base + "/listar")
-    Call<GenericResponse<List<Usuario>>> getUsuariosLista();
+    Call<GenericResponse<List<UsuarioDTO>>> getUsuariosLista();
 
     @DELETE(base + "/delete/{id}")
-    Call<GenericResponse<Usuario>> eliminarUsuario(@Path("id") Long  id);
+    Call<GenericResponse<UsuarioDTO>> eliminarUsuario(@Path("id") Long  id);
 
     @POST(base + "/toggle-vigencia/{id}")
-    Call<GenericResponse<Usuario>> toggleVigencia(@Path("id") Long id, @Query("vigencia") boolean vigencia);
+    Call<GenericResponse<UsuarioDTO>> toggleVigencia(@Path("id") Long id, @Query("vigencia") boolean vigencia);
 
     @FormUrlEncoded
     @POST(base + "/forgot-password")
@@ -45,6 +48,5 @@ public interface UsuarioApi {
     @FormUrlEncoded
     @POST(base + "/reset-password")
     Call<GenericResponse<String>> resetPassword(@Field("otp") String otp, @Field("newPassword") String newPassword);
-
 
 }

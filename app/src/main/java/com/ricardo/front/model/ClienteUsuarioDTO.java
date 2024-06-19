@@ -1,14 +1,15 @@
-package com.ricardo.front.entity.service.dto;
+package com.ricardo.front.model;
 
 
 import java.time.LocalDate;
 
 import lombok.*;
+@Data
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsuarioRegistroDTO {
+public class ClienteUsuarioDTO {
     private String id;
     private String username;
     private String email;

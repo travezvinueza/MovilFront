@@ -1,4 +1,4 @@
-package com.ricardo.front.entity;
+package com.ricardo.front.util;
 
 import lombok.*;
 @Getter

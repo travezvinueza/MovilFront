@@ -1,4 +1,4 @@
-package com.ricardo.front.utils;
+package com.ricardo.front.util;
 
 public class Global {
 

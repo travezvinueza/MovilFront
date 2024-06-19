@@ -6,8 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.ricardo.front.entity.GenericResponse;
-import com.ricardo.front.entity.service.Usuario;
+import com.ricardo.front.util.GenericResponse;
+import com.ricardo.front.model.UsuarioDTO;
 import com.ricardo.front.repository.UsuarioRepository;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,16 +20,20 @@ public class UsuarioViewModel extends AndroidViewModel {
         super(application);
         this.repository = UsuarioRepository.getInstance();
     }
-    public LiveData<GenericResponse<Usuario>> crearUsuario(Usuario usuario){
-        return this.repository.crearUsuario(usuario);
+    public LiveData<GenericResponse<UsuarioDTO>> crearUsuario(UsuarioDTO usuarioDTO){
+        return this.repository.crearUsuario(usuarioDTO);
     }
-    public LiveData<GenericResponse<Usuario>> actualizarUsuario(long id, Usuario usuario) {
-        return this.repository.actualizarUsuario(id, usuario);
+
+    public LiveData<GenericResponse<UsuarioDTO>> getByIdUsuario(long id) {
+        return this.repository.getByIdUsuario(id);
     }
-    public LiveData<GenericResponse<Usuario>> login(String username, String password){
+    public LiveData<GenericResponse<UsuarioDTO>> actualizarUsuario(long id, UsuarioDTO usuarioDTO) {
+        return this.repository.actualizarUsuario(id, usuarioDTO);
+    }
+    public LiveData<GenericResponse<UsuarioDTO>> login(String username, String password){
         return this.repository.login(username, password);
     }
-    public LiveData<GenericResponse<Usuario>> toggleVigencia(long id, boolean vigencia) {
+    public LiveData<GenericResponse<UsuarioDTO>> toggleVigencia(long id, boolean vigencia) {
         return repository.toggleVigencia(id, vigencia);
     }
 
@@ -41,10 +45,10 @@ public class UsuarioViewModel extends AndroidViewModel {
         return repository.resetPassword(otp, newPassword);
     }
 
-    public LiveData<GenericResponse<List<Usuario>>> getUsuariosLista() {
+    public LiveData<GenericResponse<List<UsuarioDTO>>> getUsuariosLista() {
         return repository.getUsuariosLista();
     }
-    public LiveData<GenericResponse<Usuario>> eliminarUsuario(long idUsuario) {
+    public LiveData<GenericResponse<UsuarioDTO>> eliminarUsuario(long idUsuario) {
         return repository.eliminarUsuario(idUsuario);
     }
 

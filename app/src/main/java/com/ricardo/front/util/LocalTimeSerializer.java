@@ -1,4 +1,4 @@
-package com.ricardo.front.utils;
+package com.ricardo.front.util;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
