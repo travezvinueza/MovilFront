@@ -119,8 +119,6 @@ public class MainActivity extends AppCompatActivity {
                                             .registerTypeAdapter(Time.class, new LocalTimeSerializer())
                                             .create();
                                     editor.putString("UsuarioJson", g.toJson(u, new TypeToken<UsuarioDTO>() {}.getType()));
-                                    String usuarioJson = g.toJson(u, new TypeToken<UsuarioDTO>() {}.getType());
-                                    Log.d("UsuarioJson", usuarioJson);
                                     editor.apply();
                                     editUsername.setText("");
                                     editPassword.setText("");

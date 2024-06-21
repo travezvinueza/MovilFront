@@ -22,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ConfigApi {
     public static final String baseUrlE = "http://10.0.2.2:8080";
-    public static final String ipRicardo = "http://192.168.200.14:8080/";  //Aqui va la IP de su computadora
+    public static final String ipRicardo = "http://192.168.200.7:8080/";  //Aqui va la IP de su computadora
     private static Retrofit retrofit;
     private static String token = "";
     private static UsuarioApi usuarioApi;

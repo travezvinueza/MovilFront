@@ -1,10 +1,13 @@
 package com.ricardo.front.util;
 
 import lombok.*;
+
+@Data
 @Getter
 @Setter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class GenericResponse<T> {
     private String type;
     private int rpta;

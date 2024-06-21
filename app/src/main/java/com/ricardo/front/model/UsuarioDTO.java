@@ -1,5 +1,8 @@
 package com.ricardo.front.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
@@ -21,9 +24,10 @@ public class UsuarioDTO {
     private String email;
     private String contrasena;
     private boolean vigencia;
-    private LocalDate fecha;
-    private String otp;
     private String role;
+    private LocalDate fecha;
     private Long clienteId;
-    private UsuarioClienteDTO usuarioClienteDTO;
+    @SerializedName("usuarioClienteDto")
+    @Expose
+    private UsuarioClienteDTO usuarioClienteDto;
 }

@@ -20,24 +20,31 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:padding="5dp">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv1"
+                android:id="@+id/tvId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:textAlignment="center"
-                android:text="ROL"
-                android:textColor="#0B0B0C"
+                android:text="Id"
+                android:textColor="#090808"
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/img"
                 android:layout_width="100dp"
-                android:layout_height="100dp"/>
+                android:layout_height="90dp" />
+
+            <TextView
+                android:id="@+id/tv1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ROL"
+                android:textAlignment="center"
+                android:textColor="#FF5722"
+                android:textSize="20dp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -46,7 +53,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="5dp">
 
             <TextView
                 android:id="@+id/tv0"
@@ -54,6 +62,8 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="Username"
+
+                android:textColor="@color/black"
                 android:textSize="15sp" />
 
             <TextView
@@ -61,24 +71,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
+
                 android:text="Email"
+                android:textColor="@color/black"
                 android:textSize="15sp" />
 
-            <TextView
-                android:id="@+id/tv3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5sp"
-                android:padding="5dp"
-                android:text="Contraseña" />
-
-            <TextView
-                android:id="@+id/tv4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5sp"
-                android:padding="5dp"
-                android:text="vigencia" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -86,78 +83,75 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvId"
+                    android:id="@+id/tvTelefono"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5sp"
                     android:padding="5dp"
-                    android:textColor="#F30505"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:text="Id" />
+                    android:text="Telefono"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/tvFecha"
+                    android:id="@+id/tv4"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="5sp"
-                    android:layout_marginLeft="50dp"
+                    android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:text="Fecha" />
+                    android:text="vigencia"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
-            <!-- Views for UsuarioClienteDTO -->
-            <TextView
-                android:id="@+id/tvNombres"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nombres" />
 
             <TextView
-                android:id="@+id/tvApellidos"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvDireccion"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Apellidos" />
+                android:padding="5dp"
+                android:text="Direccion"
+                android:textColor="@color/black"
+                android:textSize="15sp"/>
 
             <TextView
-                android:id="@+id/tvTelefono"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvFecha"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Telefono" />
+                android:padding="5dp"
+                android:text="Fecha"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:padding="5dp">
 
-            <ImageView
-                android:id="@+id/btnEditar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#3F6BF1"
-                android:padding="5dp"
-                app:srcCompat="@drawable/ic_edit_24" />
+            <!--            <ImageView-->
+            <!--                android:id="@+id/btnAgregar"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:background="#3F6BF1"-->
+            <!--                android:padding="5dp"-->
+            <!--                app:srcCompat="@drawable/ic_add" />-->
 
             <ImageView
                 android:id="@+id/btnEliminar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8sp"
-                android:background="#FF0026"
-                android:padding="5dp"
+                android:backgroundTint="#FFFFFF"
                 app:srcCompat="@drawable/ic_delete_24" />
 
             <ImageView
                 android:id="@+id/btnToggleVigencia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8sp"
-                android:background="#5A5A5A"
-                android:padding="5dp"
+                android:layout_marginTop="10sp"
+                android:backgroundTint="#FFFFFF"
                 app:srcCompat="@drawable/ic_unlocked" />
 
         </LinearLayout>

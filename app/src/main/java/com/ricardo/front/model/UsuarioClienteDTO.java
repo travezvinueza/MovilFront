@@ -1,5 +1,6 @@
 package com.ricardo.front.model;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import lombok.AllArgsConstructor;
@@ -19,26 +20,34 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UsuarioClienteDTO {
     @SerializedName("id")
+    @Expose
     private Long id;
     @SerializedName("nombres")
+    @Expose
     private String nombres;
     @SerializedName("apellidos")
+    @Expose
     private String apellidos;
     @SerializedName("telefono")
+    @Expose
     private String telefono;
     @SerializedName("tipoDoc")
+    @Expose
     private String tipoDoc;
     @SerializedName("numDoc")
+    @Expose
     private String numDoc;
     @SerializedName("direccion")
+    @Expose
     private String direccion;
     @SerializedName("provincia")
+    @Expose
     private String provincia;
     @SerializedName("capital")
+    @Expose
     private String capital;
     @SerializedName("fecha")
+    @Expose
     private LocalDate fecha;
-    @SerializedName("usuarioId")
-    private Long usuarioId;
 }
 

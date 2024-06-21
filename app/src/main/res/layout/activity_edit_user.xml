@@ -22,6 +22,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Editar Usuario"
+            android:layout_marginTop="15dp"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:transitionName="textTrans"
+            android:layout_gravity="center" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/txtNombres"
             android:layout_width="match_parent"
@@ -165,9 +175,9 @@
                 android:id="@+id/btnActualizarDatos"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:backgroundTint="#4CAF50"
+                android:backgroundTint="#030D61"
                 android:layout_gravity="center"
-                android:text="Registrar" />
+                android:text="ACTUALIZAR" />
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>

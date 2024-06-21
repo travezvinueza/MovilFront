@@ -34,10 +34,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ricardo.front.adapter.AdaptadorUsuarios;
 import com.ricardo.front.databinding.ActivityAdminBinding;
+import com.ricardo.front.model.UsuarioClienteDTO;
 import com.ricardo.front.util.GenericResponse;
 import com.ricardo.front.model.UsuarioDTO;
 import com.ricardo.front.util.DateSerializer;
 import com.ricardo.front.util.TimeSerializer;
+import com.ricardo.front.viewmodel.SharedViewModel;
 import com.ricardo.front.viewmodel.UsuarioViewModel;
 
 import java.sql.Date;
@@ -50,9 +52,10 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class AdminActivity extends AppCompatActivity {
     private ActivityAdminBinding binding;
     private UsuarioViewModel usuarioViewModel;
+    private SharedViewModel sharedViewModel;
     private List<UsuarioDTO> usuariosList;
     private RecyclerView rvLista;
-    private AdaptadorUsuarios adaptador;
+    AdaptadorUsuarios adaptador;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     SharedPreferences sharedPreferences;
@@ -75,6 +78,15 @@ public class AdminActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        binding.btnAddFragment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateUserFragment fm = new CreateUserFragment();
+                fm.show(getSupportFragmentManager(), "fracmento abierto");
+            }
+        });
+
 
     }
 
@@ -101,11 +113,13 @@ public class AdminActivity extends AppCompatActivity {
 
         usuariosList = new ArrayList<>();
 
-        adaptador = new AdaptadorUsuarios(this, usuariosList);
+        adaptador = new AdaptadorUsuarios(this, usuariosList, getSupportFragmentManager());
+        adaptador.notifyDataSetChanged();
         rvLista.setAdapter(adaptador);
 
         // Inicializar ViewModel
         usuarioViewModel = new ViewModelProvider(this).get(UsuarioViewModel.class);
+        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
 
         // Observa la lista de usuarios
         usuarioViewModel.getUsuariosLista().observe(this, new Observer<GenericResponse<List<UsuarioDTO>>>() {
@@ -119,6 +133,21 @@ public class AdminActivity extends AppCompatActivity {
                 } else {
                     Log.d("AdminActivity", "No se obtuvieron usuarios");
                 }
+            }
+        });
+
+        // Observa los cambios en el estado de creación de usuario
+        sharedViewModel.getUserCreated().observe(this, userCreated -> {
+            if (userCreated != null && userCreated) {
+                // Recarga la lista de usuarios
+                usuarioViewModel.getUsuariosLista().observe(this, response -> {
+                    if (response != null && response.getBody() != null) {
+                        usuariosList.clear();
+                        usuariosList.addAll(response.getBody());
+                        adaptador.notifyDataSetChanged();
+                    }
+                });
+                sharedViewModel.setUserCreated(false); // Reset the flag
             }
         });
 
@@ -144,7 +173,8 @@ public class AdminActivity extends AppCompatActivity {
 
         usuariosList = new ArrayList<>();
 
-        adaptador = new AdaptadorUsuarios(AdminActivity.this, usuariosList);
+        adaptador = new AdaptadorUsuarios(this, usuariosList, getSupportFragmentManager());
+        adaptador.notifyDataSetChanged();
         rvLista.setAdapter(adaptador);
 
 
@@ -154,7 +184,7 @@ public class AdminActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
 
                     case R.id.mUser:
-                        Toast.makeText(AdminActivity.this, "test uno", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AdminActivity.this, "CrearUsuario", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawers();
                         Intent user = new Intent(AdminActivity.this, AdminActivity.class);
                         startActivity(user);
@@ -273,13 +303,30 @@ public class AdminActivity extends AppCompatActivity {
                 .create();
         String usuarioJson = sp.getString("UsuarioJson", null);
         if(usuarioJson != null){
-            final UsuarioDTO u = g.fromJson(usuarioJson, UsuarioDTO.class);
-            final View vistaHeader = binding.navView.getHeaderView(0);
-            final TextView tvCorreo = vistaHeader.findViewById(R.id.tvCorreo),
-                           tvRole = vistaHeader.findViewById(R.id.tvRole);
+            UsuarioDTO usuarioDTO = g.fromJson(usuarioJson, UsuarioDTO.class);
+            View headerView = navigationView.getHeaderView(0);
+            TextView tvCorreo = headerView.findViewById(R.id.tvCorreo);
+            TextView tvRole = headerView.findViewById(R.id.tvRole);
+            TextView tvUsername = headerView.findViewById(R.id.tvUsername);
 
-            tvCorreo.setText(u.getEmail());
-            tvRole.setText(u.getRole());
+            TextView tvName = headerView.findViewById(R.id.tvName);
+            TextView tvLastName = headerView.findViewById(R.id.tvLastName);
+
+            if (usuarioDTO != null && usuarioDTO.getUsuarioClienteDto() != null) {
+                UsuarioClienteDTO usuarioClienteDTO = usuarioDTO.getUsuarioClienteDto();
+
+                tvName.setText(usuarioClienteDTO.getNombres());
+                tvLastName.setText(usuarioClienteDTO.getApellidos());
+
+                tvCorreo.setText(usuarioDTO.getEmail());
+                tvRole.setText(usuarioDTO.getRole());
+                tvUsername.setText(usuarioDTO.getUsername());
+
+            } else {
+
+                tvName.setText("vacios");
+                tvLastName.setText("vacios");
+            }
         }
     }
 

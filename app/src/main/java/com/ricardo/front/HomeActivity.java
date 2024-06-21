@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,9 +27,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ricardo.front.model.UsuarioClienteDTO;
 import com.ricardo.front.model.UsuarioDTO;
-import com.ricardo.front.util.DateSerializer;
-import com.ricardo.front.util.TimeSerializer;
+import com.ricardo.front.util.LocalDateSerializer;
+import com.ricardo.front.util.LocalTimeSerializer;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -158,8 +160,8 @@ public class HomeActivity extends AppCompatActivity {
     private void loadData() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new DateSerializer())
-                .registerTypeAdapter(Time.class, new TimeSerializer())
+                .registerTypeAdapter(Date.class, new LocalDateSerializer())
+                .registerTypeAdapter(Time.class, new LocalTimeSerializer())
                 .create();
         String usuarioJson = sp.getString("UsuarioJson", null);
 
@@ -169,13 +171,26 @@ public class HomeActivity extends AppCompatActivity {
             View headerView = navigationView.getHeaderView(0);
             TextView tvCorreo = headerView.findViewById(R.id.tvCorreo);
             TextView tvRole = headerView.findViewById(R.id.tvRole);
-            TextView tvNombre = headerView.findViewById(R.id.tvNombre);
+            TextView tvUsername = headerView.findViewById(R.id.tvUsername);
 
-            tvNombre.setText(usuarioDTO.getUsuarioClienteDTO().getNombres());
+            TextView tvName = headerView.findViewById(R.id.tvName);
+            TextView tvLastName = headerView.findViewById(R.id.tvLastName);
 
-            tvCorreo.setText(usuarioDTO.getEmail());
-            tvRole.setText(usuarioDTO.getRole());
-            tvNombre.setText(usuarioDTO.getRole());
+            if (usuarioDTO != null && usuarioDTO.getUsuarioClienteDto() != null) {
+                UsuarioClienteDTO usuarioClienteDTO = usuarioDTO.getUsuarioClienteDto();
+
+                tvName.setText(usuarioClienteDTO.getNombres());
+                tvLastName.setText(usuarioClienteDTO.getApellidos());
+
+                tvCorreo.setText(usuarioDTO.getEmail());
+                tvRole.setText(usuarioDTO.getRole());
+                tvUsername.setText(usuarioDTO.getUsername());
+
+            } else {
+
+                tvName.setText("vacios");
+                tvLastName.setText("vacios");
+            }
         }
     }
 

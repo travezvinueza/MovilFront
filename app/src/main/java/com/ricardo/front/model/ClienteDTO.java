@@ -1,11 +1,14 @@
 package com.ricardo.front.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.time.LocalDate;
 
 import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClienteDTO {
@@ -19,7 +22,7 @@ public class ClienteDTO {
     private String provincia;
     private String capital;
     private LocalDate fecha;
-    private Long usuarioId;
+    @SerializedName("clienteUsuarioDTO")
     private ClienteUsuarioDTO clienteUsuarioDTO;
 }
 

@@ -20,6 +20,13 @@ public class UsuarioViewModel extends AndroidViewModel {
         super(application);
         this.repository = UsuarioRepository.getInstance();
     }
+
+
+    public LiveData<GenericResponse<List<UsuarioDTO>>> getUsuariosLista() {
+        return repository.getUsuariosLista();
+    }
+
+
     public LiveData<GenericResponse<UsuarioDTO>> crearUsuario(UsuarioDTO usuarioDTO){
         return this.repository.crearUsuario(usuarioDTO);
     }
@@ -45,9 +52,7 @@ public class UsuarioViewModel extends AndroidViewModel {
         return repository.resetPassword(otp, newPassword);
     }
 
-    public LiveData<GenericResponse<List<UsuarioDTO>>> getUsuariosLista() {
-        return repository.getUsuariosLista();
-    }
+
     public LiveData<GenericResponse<UsuarioDTO>> eliminarUsuario(long idUsuario) {
         return repository.eliminarUsuario(idUsuario);
     }
