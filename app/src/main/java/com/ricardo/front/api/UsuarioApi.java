@@ -17,6 +17,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface UsuarioApi {
+
     String base = "api/usuarios";
 
     @POST(base + "/create")

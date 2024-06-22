@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,7 +27,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
@@ -63,6 +63,10 @@ public class AdminActivity extends AppCompatActivity {
     EditText etBuscador;
     ActionBarDrawerToggle toggle;
 
+    private Handler handler;
+    private Runnable runnable;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +74,12 @@ public class AdminActivity extends AppCompatActivity {
         binding = ActivityAdminBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        this.init();
+        initViews();
+        setupRecyclerView();
+        setupToolbar();
+        setupNavigationDrawer();
+        setupViewModels();
+        setupListeners();
         this.Quieto();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -79,45 +88,40 @@ public class AdminActivity extends AppCompatActivity {
             return insets;
         });
 
-        binding.btnAddFragment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateUserFragment fm = new CreateUserFragment();
-                fm.show(getSupportFragmentManager(), "fracmento abierto");
-            }
-        });
-
-
     }
 
-    private void init() {
+    private void initViews() {
         sharedPreferences = getSharedPreferences("LoginFile" , MODE_PRIVATE);
         editor = sharedPreferences.edit();
-
-        // Configurar el Toolbar
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_View);
+        etBuscador = findViewById(R.id.etBuscador);
+        rvLista = findViewById(R.id.rvLista);
+    }
+
+    private void setupRecyclerView() {
+        usuariosList = new ArrayList<>();
+        adaptador = new AdaptadorUsuarios(this, usuariosList, getSupportFragmentManager());
+        rvLista.setLayoutManager(new GridLayoutManager(this, 1));
+        rvLista.setAdapter(adaptador);
+    }
+
+    private void setupToolbar() {
         setSupportActionBar(binding.toolbar);
-        // Eliminar el título de la aplicación en el Toolbar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
+    }
 
-
-        toggle = new ActionBarDrawerToggle(AdminActivity.this, drawerLayout, R.string.open, R.string.close);
+    private void setupNavigationDrawer() {
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+    }
 
-        rvLista = findViewById(R.id.rvLista);
-        rvLista.setLayoutManager(new LinearLayoutManager(this));
+    private void setupViewModels(){
 
-        usuariosList = new ArrayList<>();
-
-        adaptador = new AdaptadorUsuarios(this, usuariosList, getSupportFragmentManager());
-        adaptador.notifyDataSetChanged();
-        rvLista.setAdapter(adaptador);
-
-        // Inicializar ViewModel
         usuarioViewModel = new ViewModelProvider(this).get(UsuarioViewModel.class);
         sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
 
@@ -137,24 +141,37 @@ public class AdminActivity extends AppCompatActivity {
         });
 
         // Observa los cambios en el estado de creación de usuario
-        sharedViewModel.getUserCreated().observe(this, userCreated -> {
-            if (userCreated != null && userCreated) {
-                // Recarga la lista de usuarios
-                usuarioViewModel.getUsuariosLista().observe(this, response -> {
-                    if (response != null && response.getBody() != null) {
-                        usuariosList.clear();
-                        usuariosList.addAll(response.getBody());
-                        adaptador.notifyDataSetChanged();
-                    }
-                });
-                sharedViewModel.setUserCreated(false); // Reset the flag
+        sharedViewModel.getUserCreated().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean userCreated) {
+                if (userCreated != null && userCreated) {
+                    // Recarga la lista de usuarios
+                    usuarioViewModel.getUsuariosLista().observe(AdminActivity.this, response -> {
+                        if (response != null && response.getBody() != null) {
+                            usuariosList.clear();
+                            usuariosList.addAll(response.getBody());
+                            adaptador.notifyDataSetChanged();
+                        }
+                    });
+                    sharedViewModel.setUserCreated(false); // Reinicia la bandera
+                }
             }
         });
 
-        // Llamar al método para obtener la lista de usuarios
         usuarioViewModel.getUsuariosLista();
+    }
 
-        etBuscador = findViewById(R.id.etBuscador);
+
+    public void setupListeners(){
+
+        binding.btnAddFragment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateUserFragment fm = new CreateUserFragment();
+                fm.show(getSupportFragmentManager(), "fracmento abierto");
+            }
+        });
+
         etBuscador.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -167,16 +184,6 @@ public class AdminActivity extends AppCompatActivity {
                 filtrar(s.toString());
             }
         });
-
-        rvLista = findViewById(R.id.rvLista);
-        rvLista.setLayoutManager(new GridLayoutManager(this, 1));
-
-        usuariosList = new ArrayList<>();
-
-        adaptador = new AdaptadorUsuarios(this, usuariosList, getSupportFragmentManager());
-        adaptador.notifyDataSetChanged();
-        rvLista.setAdapter(adaptador);
-
 
         navigationView.setNavigationItemSelectedListener(new  NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -211,9 +218,10 @@ public class AdminActivity extends AppCompatActivity {
                 return false;
             }
         });
-
     }
 
+
+    // Método para filtrar los usuarios por nombre
     public void filtrar(String texto) {
         ArrayList<UsuarioDTO> filtrarLista = new ArrayList<>();
 

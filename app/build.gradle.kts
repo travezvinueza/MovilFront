@@ -37,7 +37,6 @@ android {
     packagingOptions {
         resources.excludes.add("META-INF/*")
     }
-    buildToolsVersion = "27.0.3"
 
 }
 
@@ -64,4 +63,6 @@ dependencies {
     implementation(libs.okhttpLoggingInterceptor)
     implementation(libs.stetho)
     implementation(libs.stethoOkhttp3)
+
+    implementation(libs.work)
 }

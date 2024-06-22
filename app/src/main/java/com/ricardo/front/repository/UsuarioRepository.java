@@ -2,6 +2,7 @@ package com.ricardo.front.repository;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -9,6 +10,7 @@ import com.ricardo.front.api.ConfigApi;
 import com.ricardo.front.api.UsuarioApi;
 import com.ricardo.front.util.GenericResponse;
 import com.ricardo.front.model.UsuarioDTO;
+import com.ricardo.front.util.Global;
 
 import java.util.List;
 
@@ -16,45 +18,35 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 public class UsuarioRepository {
+
     private static UsuarioRepository repository;
     private final UsuarioApi api;
 
     public UsuarioRepository() {
         this.api = ConfigApi.getUsuarioApi();
     }
-    public static UsuarioRepository getInstance() {
-        if (repository == null) {
-            synchronized (UsuarioRepository.class) {
-                if (repository == null) {
-                    repository = new UsuarioRepository();
-                }
-            }
+
+    public static UsuarioRepository getInstance(){
+        if(repository == null){
+            repository = new UsuarioRepository();
         }
         return repository;
     }
 
-    // Método para crear un  usuario
+
     public LiveData<GenericResponse<UsuarioDTO>> crearUsuario(UsuarioDTO usuarioDTO) {
         final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
         api.crearUsuario(usuarioDTO).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
+            public void onResponse(@NonNull Call<GenericResponse<UsuarioDTO>> call,@NonNull Response<GenericResponse<UsuarioDTO>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     mld.setValue(response.body());
-                } else {
-                    GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
-                    errorResponse.setMessage("Error en la respuesta de la API");
-                    mld.setValue(errorResponse);
-                    Log.e("ClienteRepository", "Error en la respuesta de la API: " + response.errorBody());
                 }
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
-                GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
-                errorResponse.setMessage("Error de red: " + t.getMessage());
-                mld.setValue(errorResponse);
-                Log.e("ClienteRepository", "Error de red", t);
+            public void onFailure(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Throwable t) {
+                mld.setValue(new GenericResponse<>());
             }
         });
         return mld;
@@ -64,23 +56,23 @@ public class UsuarioRepository {
         final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
         api.getByIdUsuario(id).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
+            public void onResponse(@NonNull Call<GenericResponse<UsuarioDTO>> call,@NonNull Response<GenericResponse<UsuarioDTO>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     mld.setValue(response.body());
                 } else {
-                    GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
-                    errorResponse.setMessage("Error en la respuesta de la API");
+                    GenericResponse<UsuarioDTO> errorResponse = GenericResponse.<UsuarioDTO>builder()
+                            .type(Global.TIPO_RESULT)
+                            .rpta(Global.RPTA_ERROR)
+                            .message(Global.OPERACION_INCORRECTA)
+                            .body(null)
+                            .build();
                     mld.setValue(errorResponse);
-                    Log.e("UsuarioRepository", "Error en la respuesta de la API: " + response.errorBody());
                 }
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
-                GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
-                errorResponse.setMessage("Error de red: " + t.getMessage());
-                mld.setValue(errorResponse);
-                Log.e("UsuarioRepository", "Error de red", t);
+            public void onFailure(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Throwable t) {
+                mld.setValue(new GenericResponse<>());
             }
         });
         return mld;
@@ -91,47 +83,34 @@ public class UsuarioRepository {
         final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
         api.actualizarUsuario(id, usuarioDTO).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
+            public void onResponse(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Response<GenericResponse<UsuarioDTO>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     mld.setValue(response.body());
-                } else {
-                    GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
-                    errorResponse.setMessage("Error en la respuesta de la API");
-                    mld.setValue(errorResponse);
-                    Log.e("UsuarioRepository", "Error en la respuesta de la API: " + response.errorBody());
                 }
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
-                GenericResponse<UsuarioDTO> errorResponse = new GenericResponse<>();
-                errorResponse.setMessage("Error de red: " + t.getMessage());
-                mld.setValue(errorResponse);
-                Log.e("UsuarioRepository", "Error de red", t);
+            public void onFailure(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Throwable t) {
+                mld.setValue(new GenericResponse<>());
             }
         });
         return mld;
     }
 
     // Método para traer una lista de los usuarios
-    public LiveData<GenericResponse<List<UsuarioDTO>>> getUsuariosLista() {
+    public LiveData<GenericResponse<List<UsuarioDTO>>> getUserLista() {
         final MutableLiveData<GenericResponse<List<UsuarioDTO>>> mld = new MutableLiveData<>();
         this.api.getUsuariosLista().enqueue(new Callback<GenericResponse<List<UsuarioDTO>>>() {
             @Override
-            public void onResponse(Call<GenericResponse<List<UsuarioDTO>>> call, Response<GenericResponse<List<UsuarioDTO>>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Log.d("UsuarioRepository", "Lista de usuarios recibida: " + response.body().getBody());
-                } else {
-                    Log.e("UsuarioRepository", "Error en la respuesta: " + response.code());
-                }
+            public void onResponse(@NonNull Call<GenericResponse<List<UsuarioDTO>>> call, @NonNull Response<GenericResponse<List<UsuarioDTO>>> response) {
+                if (response.isSuccessful() && response.body() != null){
                 mld.setValue(response.body());
+                }
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<List<UsuarioDTO>>> call, Throwable t) {
-                Log.e("UsuarioRepository", "Fallo en la llamada a la API: " + t.getMessage());
+            public void onFailure(@NonNull Call<GenericResponse<List<UsuarioDTO>>> call, @NonNull Throwable t) {
                 mld.setValue(new GenericResponse<>());
-                t.printStackTrace();
             }
         });
         return mld;
@@ -142,15 +121,14 @@ public class UsuarioRepository {
         final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
         this.api.login(username, contrasenia).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
+            public void onResponse(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Response<GenericResponse<UsuarioDTO>> response) {
                 mld.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
-                mld.setValue(new GenericResponse());
-                System.out.println("Se ha producido un error al iniciar sesión: " + t.getMessage());
-                t.printStackTrace();
+            public void onFailure(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Throwable t) {
+                Log.e("UsuarioRepository", "Fallo en la llamada a la API: " + t.getMessage(), t);
+                mld.setValue(new GenericResponse<>());
             }
         });
         return mld;
@@ -161,15 +139,20 @@ public class UsuarioRepository {
         final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
         api.toggleVigencia(id, vigencia).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
+            public void onResponse(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Response<GenericResponse<UsuarioDTO>> response) {
                     mld.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
-                mld.setValue(new GenericResponse());
-                System.out.println("Se ha producido un error : " + t.getMessage());
-                t.printStackTrace();
+            public void onFailure(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Throwable t) {
+                Log.e("UsuarioRepository", "Fallo en la llamada a la API: " + t.getMessage(), t);
+                GenericResponse<UsuarioDTO> errorResponse = GenericResponse.<UsuarioDTO>builder()
+                        .type(Global.TIPO_RESULT)
+                        .rpta(Global.RPTA_ERROR)
+                        .message(Global.OPERACION_ERRONEA)
+                        .body(null)
+                        .build();
+                mld.setValue(errorResponse);
             }
         });
         return mld;
@@ -180,14 +163,20 @@ public class UsuarioRepository {
         final MutableLiveData<GenericResponse<String>> mld = new MutableLiveData<>();
         api.forgotPassword(email).enqueue(new Callback<GenericResponse<String>>() {
             @Override
-            public void onResponse(Call<GenericResponse<String>> call, Response<GenericResponse<String>> response) {
+            public void onResponse(@NonNull Call<GenericResponse<String>> call, @NonNull Response<GenericResponse<String>> response) {
                 mld.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<String>> call, Throwable t) {
-                mld.setValue(new GenericResponse<>());
-                t.printStackTrace();
+            public void onFailure(@NonNull Call<GenericResponse<String>> call, @NonNull Throwable t) {
+                GenericResponse<String> errorResponse = GenericResponse.<String>builder()
+                        .type(Global.TIPO_RESULT)
+                        .rpta(Global.RPTA_ERROR)
+                        .message(Global.OPERACION_ERRONEA)
+                        .body(null)
+                        .build();
+                mld.setValue(errorResponse);
+                Log.e("UsuarioRepository", "Fallo en la llamada a la API: " + t.getMessage(), t);
             }
         });
         return mld;
@@ -198,14 +187,13 @@ public class UsuarioRepository {
         final MutableLiveData<GenericResponse<String>> mld = new MutableLiveData<>();
         api.resetPassword(otp, newPassword).enqueue(new Callback<GenericResponse<String>>() {
             @Override
-            public void onResponse(Call<GenericResponse<String>> call, Response<GenericResponse<String>> response) {
+            public void onResponse(@NonNull Call<GenericResponse<String>> call, @NonNull Response<GenericResponse<String>> response) {
                 mld.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<GenericResponse<String>> call, Throwable t) {
+            public void onFailure(@NonNull Call<GenericResponse<String>> call, @NonNull Throwable t) {
                 mld.setValue(new GenericResponse<>());
-                t.printStackTrace();
             }
         });
         return mld;
@@ -216,14 +204,19 @@ public class UsuarioRepository {
         final MutableLiveData<GenericResponse<UsuarioDTO>> mld = new MutableLiveData<>();
         api.eliminarUsuario(id).enqueue(new Callback<GenericResponse<UsuarioDTO>>() {
             @Override
-            public void onResponse(Call<GenericResponse<UsuarioDTO>> call, Response<GenericResponse<UsuarioDTO>> response) {
+            public void onResponse(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Response<GenericResponse<UsuarioDTO>> response) {
                     mld.setValue(response.body());
             }
+
             @Override
-            public void onFailure(Call<GenericResponse<UsuarioDTO>> call, Throwable t) {
-                mld.setValue(new GenericResponse());
-                System.out.println("Se ha producido un error : " + t.getMessage());
-                t.printStackTrace();
+            public void onFailure(@NonNull Call<GenericResponse<UsuarioDTO>> call,@NonNull Throwable t) {
+                GenericResponse<UsuarioDTO> errorResponse = GenericResponse.<UsuarioDTO>builder()
+                        .type(Global.TIPO_RESULT)
+                        .rpta(Global.RPTA_ERROR)
+                        .message(Global.OPERACION_ERRONEA)
+                        .body(null)
+                        .build();
+                mld.setValue(errorResponse);
             }
         });
         return mld;

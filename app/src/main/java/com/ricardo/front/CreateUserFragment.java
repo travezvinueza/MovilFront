@@ -48,7 +48,6 @@ public class CreateUserFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_user, container, false);
 
-        this.limpiarCampos();
         fmUsername = view.findViewById(R.id.fmUsername);
         fmEmail = view.findViewById(R.id.fmEmail);
         fmPassword = view.findViewById(R.id.fmPassword);
