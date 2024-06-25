@@ -5,6 +5,8 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.ricardo.front.util.GenericResponse;
 import com.ricardo.front.model.UsuarioDTO;
@@ -17,16 +19,35 @@ import java.util.List;
 public class UsuarioViewModel extends AndroidViewModel {
 
     private final UsuarioRepository repository;
+    private final MutableLiveData<GenericResponse<List<UsuarioDTO>>> usuariosLista;
 
     public UsuarioViewModel(@NonNull @NotNull Application application) {
         super(application);
         this.repository = UsuarioRepository.getInstance();
-    }
 
+        this.usuariosLista = new MutableLiveData<>();
+        loadUsuarios();
+    }
 
     public LiveData<GenericResponse<List<UsuarioDTO>>> getUsuariosLista() {
-        return repository.getUserLista();
+        return usuariosLista;
     }
+    private void loadUsuarios() {
+        repository.getUserLista().observeForever(new Observer<GenericResponse<List<UsuarioDTO>>>() {
+            @Override
+            public void onChanged(GenericResponse<List<UsuarioDTO>> response) {
+                usuariosLista.postValue(response);
+            }
+        });
+    }
+
+    public void refreshUsuarios() {
+        loadUsuarios();
+    }
+
+//    public LiveData<GenericResponse<List<UsuarioDTO>>> getUsuariosLista() {
+//        return repository.getUserLista();
+//    }
 
     public LiveData<GenericResponse<UsuarioDTO>> crearUsuario(UsuarioDTO usuarioDTO){
         return this.repository.crearUsuario(usuarioDTO);

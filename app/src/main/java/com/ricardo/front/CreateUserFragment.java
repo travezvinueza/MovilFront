@@ -84,7 +84,6 @@ public class CreateUserFragment extends DialogFragment {
         usuarioDTO.setContrasena(password);
         usuarioDTO.setVigencia(true);
         usuarioDTO.setRole(role);
-        usuarioDTO.setFecha(LocalDate.now());
 
         UsuarioClienteDTO usuarioClienteDTO = new UsuarioClienteDTO();
         usuarioClienteDTO.setFecha(LocalDate.now());

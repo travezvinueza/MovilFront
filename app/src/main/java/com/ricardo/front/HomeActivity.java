@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +33,7 @@ import com.ricardo.front.util.LocalTimeSerializer;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDateTime;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -94,14 +94,14 @@ public class HomeActivity extends AppCompatActivity {
                     case R.id.mTest1:
                         Toast.makeText(HomeActivity.this, "test uno", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawers();
-                        Intent user = new Intent(HomeActivity.this, MainActivity.class);
+                        Intent user = new Intent(HomeActivity.this, HomeActivity.class);
                         startActivity(user);
                         break;
 
                     case R.id.mTest2:
                         Toast.makeText(HomeActivity.this, "test dos", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawers();
-                        Intent role = new Intent(HomeActivity.this, MainActivity.class);
+                        Intent role = new Intent(HomeActivity.this, HomeActivity.class);
                         startActivity(role);
                         break;
 

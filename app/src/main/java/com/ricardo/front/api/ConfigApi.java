@@ -3,14 +3,9 @@ package com.ricardo.front.api;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ricardo.front.util.DateSerializer;
 import com.ricardo.front.util.LocalDateSerializer;
 import com.ricardo.front.util.LocalTimeSerializer;
-import com.ricardo.front.util.TimeSerializer;
 
-
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +29,6 @@ public class ConfigApi {
 
     private static void initClient() {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new DateSerializer())
-                .registerTypeAdapter(Time.class, new TimeSerializer())
                 .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
                 .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
                 .create();

@@ -32,18 +32,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ricardo.front.adapter.AdaptadorUsuarios;
+import com.ricardo.front.adapter.AdapterUsuarios;
 import com.ricardo.front.databinding.ActivityAdminBinding;
 import com.ricardo.front.model.UsuarioClienteDTO;
 import com.ricardo.front.util.GenericResponse;
 import com.ricardo.front.model.UsuarioDTO;
-import com.ricardo.front.util.DateSerializer;
-import com.ricardo.front.util.TimeSerializer;
+import com.ricardo.front.util.LocalDateSerializer;
+import com.ricardo.front.util.LocalTimeSerializer;
 import com.ricardo.front.viewmodel.SharedViewModel;
 import com.ricardo.front.viewmodel.UsuarioViewModel;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class AdminActivity extends AppCompatActivity {
     private SharedViewModel sharedViewModel;
     private List<UsuarioDTO> usuariosList;
     private RecyclerView rvLista;
-    AdaptadorUsuarios adaptador;
+    AdapterUsuarios adaptador;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     SharedPreferences sharedPreferences;
@@ -65,6 +66,7 @@ public class AdminActivity extends AppCompatActivity {
 
     private Handler handler;
     private Runnable runnable;
+//    private WebSocket webSocket;
 
 
     @Override
@@ -81,12 +83,15 @@ public class AdminActivity extends AppCompatActivity {
         setupViewModels();
         setupListeners();
         this.Quieto();
+//        connectWebSocket();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        startAutoRefresh();
 
     }
 
@@ -101,7 +106,7 @@ public class AdminActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         usuariosList = new ArrayList<>();
-        adaptador = new AdaptadorUsuarios(this, usuariosList, getSupportFragmentManager());
+        adaptador = new AdapterUsuarios(this, usuariosList, getSupportFragmentManager());
         rvLista.setLayoutManager(new GridLayoutManager(this, 1));
         rvLista.setAdapter(adaptador);
     }
@@ -131,8 +136,9 @@ public class AdminActivity extends AppCompatActivity {
             public void onChanged(GenericResponse<List<UsuarioDTO>> response) {
                 if (response != null && response.getBody() != null) {
                     Log.d("AdminActivity", "Usuarios obtenidos: " + response.getBody().size());
-                    usuariosList.clear();
-                    usuariosList.addAll(response.getBody());
+//                    usuariosList.clear();
+//                    usuariosList.addAll(response.getBody());
+                    adaptador.setUsuariosList(response.getBody());
                     adaptador.notifyDataSetChanged();
                 } else {
                     Log.d("AdminActivity", "No se obtuvieron usuarios");
@@ -145,22 +151,48 @@ public class AdminActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean userCreated) {
                 if (userCreated != null && userCreated) {
-                    // Recarga la lista de usuarios
-                    usuarioViewModel.getUsuariosLista().observe(AdminActivity.this, response -> {
-                        if (response != null && response.getBody() != null) {
-                            usuariosList.clear();
-                            usuariosList.addAll(response.getBody());
-                            adaptador.notifyDataSetChanged();
-                        }
-                    });
+                    usuarioViewModel.refreshUsuarios();
                     sharedViewModel.setUserCreated(false); // Reinicia la bandera
                 }
             }
         });
-
-        usuarioViewModel.getUsuariosLista();
     }
 
+    private void startAutoRefresh() {
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                usuarioViewModel.refreshUsuarios();
+                handler.postDelayed(this, 1000); // Refrescar cada 1 segundos
+            }
+        };
+        handler.post(runnable);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (handler != null && runnable != null) {
+            handler.removeCallbacks(runnable);
+        }
+    }
+
+//    private void connectWebSocket() {
+//        OkHttpClient client = new OkHttpClient();
+//        Request request = new Request.Builder().url("ws://192.168.200.7:8080/ws/users").build();
+//        WebSocketClient listener = new WebSocketClient(usuarioViewModel);
+//        webSocket = client.newWebSocket(request, listener);
+//        client.dispatcher().executorService().shutdown();
+//    }
+//
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if (webSocket != null) {
+//            webSocket.close(1000, null); // Cierra la conexión WebSocket al destruir la actividad
+//        }
+//    }
 
     public void setupListeners(){
 
@@ -220,7 +252,6 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
-
     // Método para filtrar los usuarios por nombre
     public void filtrar(String texto) {
         ArrayList<UsuarioDTO> filtrarLista = new ArrayList<>();
@@ -254,6 +285,7 @@ public class AdminActivity extends AppCompatActivity {
                                 if (listaResponse != null && listaResponse.getBody() != null) {
                                     usuariosList.clear();
                                     usuariosList.addAll(listaResponse.getBody());
+                                    adaptador.setUsuariosList(usuariosList);
                                     adaptador.notifyDataSetChanged();
                                 }
                             });
@@ -306,8 +338,8 @@ public class AdminActivity extends AppCompatActivity {
     private void loadData() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         final Gson g = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new DateSerializer())
-                .registerTypeAdapter(Time.class, new TimeSerializer())
+                .registerTypeAdapter(Date.class, new LocalDateSerializer())
+                .registerTypeAdapter(Time.class, new LocalTimeSerializer())
                 .create();
         String usuarioJson = sp.getString("UsuarioJson", null);
         if(usuarioJson != null){

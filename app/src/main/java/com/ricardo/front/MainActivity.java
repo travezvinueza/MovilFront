@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,6 +36,7 @@ import com.ricardo.front.viewmodel.UsuarioViewModel;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDateTime;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -226,11 +226,11 @@ public class MainActivity extends AppCompatActivity {
                 String rol = usuarioDTO.getRole();
                 Intent intent;
                 if ("ADMIN".equals(rol)) {
-                    Toast.makeText(this, "Se detecto una cuenta activa!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Se detecto una cuenta activa", Toast.LENGTH_SHORT).show();
 //                    new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Se detecto una cuenta activa!");
                     intent = new Intent(this, AdminActivity.class);
                 } else if ("USER".equals(rol)) {
-                    Toast.makeText(this, "Se detecto una cuenta activa!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Se detecto una cuenta activa", Toast.LENGTH_SHORT).show();
 //                    new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Se detecto una cuenta activa!");
                     intent = new Intent(this, HomeActivity.class);
                 } else {

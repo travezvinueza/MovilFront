@@ -5,6 +5,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.*;
 @Data
@@ -28,9 +29,6 @@ public class ClienteUsuarioDTO {
     @SerializedName("vigencia")
     @Expose
     private boolean vigencia;
-    @SerializedName("fecha")
-    @Expose
-    private LocalDate fecha;
     @SerializedName("clienteId")
     @Expose
     private Long clienteId;

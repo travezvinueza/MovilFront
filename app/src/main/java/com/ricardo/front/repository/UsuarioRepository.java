@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.ricardo.front.api.ConfigApi;
 import com.ricardo.front.api.UsuarioApi;
+import com.ricardo.front.model.ClienteDTO;
 import com.ricardo.front.util.GenericResponse;
 import com.ricardo.front.model.UsuarioDTO;
 import com.ricardo.front.util.Global;
@@ -127,8 +128,13 @@ public class UsuarioRepository {
 
             @Override
             public void onFailure(@NonNull Call<GenericResponse<UsuarioDTO>> call, @NonNull Throwable t) {
-                Log.e("UsuarioRepository", "Fallo en la llamada a la API: " + t.getMessage(), t);
-                mld.setValue(new GenericResponse<>());
+                GenericResponse<UsuarioDTO> errorResponse = GenericResponse.<UsuarioDTO>builder()
+                        .type(Global.TIPO_AUTH)
+                        .rpta(Global.RPTA_ERROR)
+                        .message("Error en la llamada a la API: " + t.getMessage())
+                        .body(null)
+                        .build();
+                mld.setValue(errorResponse);
             }
         });
         return mld;

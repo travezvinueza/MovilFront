@@ -2,7 +2,6 @@ package com.ricardo.front.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ricardo.front.AdminActivity;
-import com.ricardo.front.CreateUserFragment;
 import com.ricardo.front.EditUserActivity;
 import com.ricardo.front.R;
 import com.ricardo.front.model.UsuarioClienteDTO;
@@ -25,12 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.UsuarioViewHolder> {
+public class AdapterUsuarios extends RecyclerView.Adapter<AdapterUsuarios.UsuarioViewHolder> {
     Context context;
     List<UsuarioDTO> usuariosList;
     FragmentManager fm;
 
-    public AdaptadorUsuarios(Context context, List<UsuarioDTO> usuariosList, FragmentManager fm) {
+    public AdapterUsuarios(Context context, List<UsuarioDTO> usuariosList, FragmentManager fm) {
         this.context = context;
         this.usuariosList = usuariosList;
         this.fm = fm;
@@ -45,7 +43,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdaptadorUsuarios.UsuarioViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AdapterUsuarios.UsuarioViewHolder holder, int position) {
         UsuarioDTO usuarioDTO = usuariosList.get(position);
         holder.tvId.setText(String.valueOf(usuarioDTO.getId()));
         holder.tv0.setText(usuarioDTO.getUsername());
@@ -54,12 +52,6 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
 //        holder.tv3.setText(usuarioDTO.getContrasena());
         holder.tv4.setText(String.valueOf(usuarioDTO.isVigencia()));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        if (usuarioDTO.getFecha() != null) {
-            holder.tvFecha.setText(usuarioDTO.getFecha().format(formatter));
-        } else {
-            holder.tvFecha.setText("vacios");
-        }
 
         if (usuarioDTO.isVigencia()) {
             holder.btnToggleVigencia.setImageResource(R.drawable.ic_unlocked);
@@ -69,13 +61,16 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
 
         // Obtener y asignar datos de UsuarioClienteDTO
         UsuarioClienteDTO cliente = usuarioDTO.getUsuarioClienteDto();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         if (cliente != null) {
-            holder.tvDireccion.setText(cliente.getDireccion() != null ? cliente.getDireccion() : "vacios");
-            holder.tvTelefono.setText(cliente.getTelefono() != null ? cliente.getTelefono() : "vacios");
+            holder.tvDireccion.setText(cliente.getDireccion() != null ? cliente.getDireccion() : "sin datos");
+            holder.tvTelefono.setText(cliente.getTelefono() != null ? cliente.getTelefono() : "sin datos");
+            holder.tvFecha.setText(cliente.getFecha().format(formatter) != null ? cliente.getFecha().format(formatter) : "sin datos");
 
         } else {
-            holder.tvDireccion.setText("vacios");
-            holder.tvTelefono.setText("vacios");
+            holder.tvDireccion.setText("sin datos");
+            holder.tvTelefono.setText("sin datos");
+            holder.tvFecha.setText("sin datos");
 
         }
 
@@ -175,6 +170,11 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Us
             tvTelefono = itemView.findViewById(R.id.tvTelefono);
 
         }
+    }
+
+    public void setUsuariosList(List<UsuarioDTO> usuariosList) {
+        this.usuariosList = usuariosList;
+        notifyDataSetChanged();
     }
 
     public void filtrar(ArrayList<UsuarioDTO> filtroUsuarioDTOS) {

@@ -29,6 +29,7 @@ import com.ricardo.front.viewmodel.ClienteViewModel;
 import com.ricardo.front.viewmodel.UsuarioViewModel;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -208,7 +209,6 @@ public class RegistrarUsuarioActivity extends AppCompatActivity {
                 clienteUsuarioDTO.setEmail(etEmail.getText().toString());
                 clienteUsuarioDTO.setContrasena(etPassword.getText().toString());
                 clienteUsuarioDTO.setVigencia(true);
-                clienteUsuarioDTO.setFecha(LocalDate.now());
 
                 clienteDTO.setClienteUsuarioDTO(clienteUsuarioDTO);
 

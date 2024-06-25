@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#FFFFFF"
-                android:text="BIENVENIDO! "
+                android:text="Iniciar Sesión"
                 android:textAlignment="center"
                 android:singleLine="true"
                 android:textSize="30sp"
@@ -54,7 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
-                    android:inputType="textPersonName"/>
+                    android:inputType="textPersonName|textEmailAddress"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -81,10 +81,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="25dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:textStyle="bold"
+                android:textStyle="italic"
                 android:text="Olvide mi contraseña?"
                 android:textAlignment="textEnd"
                 android:textColor="#F8F7F6"
@@ -92,10 +92,10 @@
 
             <Button
                 android:id="@+id/btnIngresar"
-                android:layout_width="180dp"
-                android:layout_height="45dp"
-                android:backgroundTint="#106013"
-                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#FF5722"
+                android:layout_marginTop="30dp"
                 android:text="LOGIN"
                 android:onClick="Login"
                 android:textStyle="bold"
@@ -107,6 +107,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
@@ -130,7 +131,7 @@
                     android:background="#00000000"
                     android:onClick="activityRegistrase"
                     android:text="Registrate"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#FF5722"
                     android:textSize="16dp"
                     android:textStyle="bold|italic" />
             </LinearLayout>

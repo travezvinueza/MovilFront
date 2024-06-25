@@ -46,23 +46,18 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.firebase.dataconnect)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
-
     implementation(libs.sweetalert)
     implementation(libs.circleimageview)
-    implementation(libs.androidMail)
-    implementation(libs.androidActivation)
     implementation(libs.retrofit)
     implementation(libs.converterGson)
+    implementation(libs.okhttp)
     implementation(libs.okhttpLoggingInterceptor)
     implementation(libs.stetho)
     implementation(libs.stethoOkhttp3)
-
-    implementation(libs.work)
 }

@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,6 @@ public class UsuarioDTO {
     private String contrasena;
     private boolean vigencia;
     private String role;
-    private LocalDate fecha;
     private Long clienteId;
     @SerializedName("usuarioClienteDto")
     @Expose
